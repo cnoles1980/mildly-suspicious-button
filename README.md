@@ -4,6 +4,8 @@ A silly website with little to no purpose. Press the button. Something might be 
 
 Live deploy: push this folder to GitHub → Settings → Pages → Deploy from branch → `/root` (or set Pages root to `mildly-suspicious-button/`).
 
+Analytics: this site uses its own Google Analytics 4 property and web stream. The measurement tag is in `index.html`; it is intentionally separate from the Bureau of Minor Grievances and AI Matrix Map properties.
+
 ## What's inside
 
 - `index.html` — the entire site. Vanilla HTML/CSS/JS, no build, no deps.

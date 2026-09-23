@@ -84,6 +84,13 @@
   #btn.fx-ghost{opacity:0}
   #btn.fx-whirl{animation:spnr 2.5s linear infinite}
   #btn.fx-neg{filter:invert(1)}
+  /* easter eggs: holding states + heat + the dimming */
+  #btn{ -webkit-touch-callout:none; }
+  #btn.holding{animation:holdpulse 1.1s ease-in-out infinite}
+  @keyframes holdpulse{50%{box-shadow:0 12px 0 #5e0610,0 0 46px 12px rgba(255,60,60,.55),inset 0 -10px 24px rgba(0,0,0,.35)}}
+  #btn.fx-hot{background:radial-gradient(circle at 35% 30%,#ffd166,#e2481f 55%,#6b0f04 100%)}
+  #dim{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity 1.2s ease;z-index:40}
+  body.dimmed #dim{opacity:.55}
   #btnWrap.fugitive{transition:transform .16s ease;z-index:6}
   #ghostNote{display:none;position:absolute;left:50%;top:44%;width:240px;height:240px;
     margin:-120px 0 0 -120px;border:3px dashed #999;border-radius:50%;z-index:4;cursor:default}
@@ -177,6 +184,7 @@
     #btn,#btnWrap,#msg{transition:none}
     body.flicker{animation:none}
     #btn.fx-shake,#btn.fx-wobble,#btn.fx-spin,#btn.fx-spin-rev,#btn.fx-flash,#btn.fx-warp,#btn.fx-rainbow,#btn.fx-jitter,#btn.fx-whirl{animation:none}
+    #btn.holding{animation:none}
     #status.consulting .dot{animation:none}
   }
 </style>
@@ -240,7 +248,7 @@
     <div id="status"><span class="dot"></span><span id="statusText">SYSTEM NOMINAL</span></div>
 
     <details class="ach">
-      <summary>Achievements (<span id="achCount">0/20</span>) — click to inspect</summary>
+      <summary>Achievements (<span id="achCount">0/22</span>) — click to inspect</summary>
       <ul id="achList"></ul>
     </details>
 
@@ -255,6 +263,7 @@
 </div>
 
 <div id="toasts" aria-live="polite"></div>
+<div id="dim" aria-hidden="true"></div>
 
 <script>
 "use strict";
@@ -1313,7 +1322,9 @@ const ACHIEVEMENTS = [
   {id:"veteran",      name:"Button Veteran",                           desc:"Press 500 times. Halfway to legend.", need:500},
   {id:"noreturn",     name:"Point of No Return",                       desc:"Press 750 times. There was a point. It is behind you.", need:750},
   {id:"millennium",   name:"Millennium Presser",                       desc:"Press 1,000 times. It hatched. You were there.", need:1000},
-  {id:"contact",      name:"First Contact",                            desc:"Meet the resident. Or poke it. It remembers.", special:true}
+  {id:"contact",      name:"First Contact",                            desc:"Meet the resident. Or poke it. It remembers.", special:true},
+  {id:"holder",       name:"The Long Hold",                            desc:"Hold the button for 5 seconds.", special:true},
+  {id:"unbroken",     name:"Unbroken",                                 desc:"Hold the button for 30 seconds. The lights went down.", special:true}
 ];
 
 /* ============================================================ STATE */
@@ -1777,6 +1788,83 @@ btn.addEventListener("mouseenter", ()=>{
   }
 });
 
+/* ============================================================ EASTER EGGS: HOLDING
+   Hold the button: 5s (acknowledged), 10s (it heats up), 30s (the lights
+   go down and the resident comes to stare). Releasing early is noted. */
+let holdTimers = [], holdStart = 0, holdFired = 0, holdResident = false;
+function holdEgg5(){
+  holdFired = 1; unlock("holder");
+  msgBox.innerHTML = "Five seconds. You are holding it.<br>It is holding you back.";
+  log("sustained contact: 5s. flagged as affection.");
+}
+function holdEgg10(){
+  holdFired = 2;
+  btn.classList.add("fx-hot");
+  msgBox.innerHTML = "Ten seconds. It is warm now.<br>So are you.";
+  log("thermal event. Gary notified. Gary is already here.");
+}
+function holdEgg30(){
+  holdFired = 3; unlock("unbroken");
+  document.body.classList.add("dimmed");
+  if(!peekActive){
+    holdResident = true;
+    peekActive = true;
+    maw.classList.add("open");
+    later(()=>{
+      critter.classList.add("peek");
+      critterLook("lookYou");
+      unlock("contact");
+    }, 800);
+  }
+  msgBox.innerHTML = "Thirty seconds.<br>It will never forget this. Neither will you.";
+  log("THIRTY SECONDS OF CONTACT. the log is honored.");
+}
+function endHold30(){
+  document.body.classList.remove("dimmed");
+  if(holdResident){
+    holdResident = false;
+    endPeek("released. it retreats. it remembers the warmth.");
+  }
+}
+function holdBegin(){
+  if(holdStart) return;
+  holdStart = Date.now();
+  btn.classList.add("holding");
+  holdTimers.push(setTimeout(holdEgg5, 5000));
+  holdTimers.push(setTimeout(holdEgg10, 10000));
+  holdTimers.push(setTimeout(holdEgg30, 30000));
+}
+function holdCancel(silent){
+  const held = holdStart ? Date.now()-holdStart : 0;
+  holdTimers.forEach(clearTimeout); holdTimers = [];
+  btn.classList.remove("holding","fx-hot");
+  if(holdFired >= 3) endHold30();
+  else if(!silent && held >= 2000){
+    msgBox.innerHTML = "You let go.<br>It noticed.";
+    log(`released after ${(held/1000).toFixed(1)}s. cowardice filed.`);
+  }
+  holdStart = 0; holdFired = 0;
+}
+btn.addEventListener("pointerdown", holdBegin);
+["pointerup","pointerleave","pointercancel"].forEach(ev=>btn.addEventListener(ev, ()=>holdCancel()));
+btn.addEventListener("contextmenu", e=>e.preventDefault());
+btn.addEventListener("keydown", e=>{ if((e.key===" "||e.key==="Enter") && !e.repeat) holdBegin(); });
+btn.addEventListener("keyup", ()=>holdCancel());
+
+/* the forbidden code: up up down down left right left right B A */
+const KONAMI = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];
+let konamiIdx = 0;
+document.addEventListener("keydown", e=>{
+  const k = e.key.length===1 ? e.key.toLowerCase() : e.key;
+  konamiIdx = (k===KONAMI[konamiIdx]) ? konamiIdx+1 : (k===KONAMI[0] ? 1 : 0);
+  if(konamiIdx===KONAMI.length){
+    konamiIdx = 0;
+    tempFx("fx-rainbow", 3000); stunt("fx-spin", 850); stunt("fx-shake", 600);
+    msgBox.innerHTML = "The ancient code.<br>The button kneels. (It cannot kneel. It vibrates.)";
+    log("konami accepted. the elders nod.");
+  }
+});
+
 /* ============================================================ PRESS */
 function directorOverride(n, prevGlobal, nextGlobal){
   const ms = crossedMilestone(prevGlobal, nextGlobal);
@@ -1857,6 +1945,7 @@ $("#reset").addEventListener("click", ()=>{
   bag = []; supervisorPhase = 0; buttonNudge = 0;
   rapidStreak = 0; idleStart = Date.now();
   clearModes();
+  holdCancel(true);
   clearPeekTimers();
   maw.classList.remove("open");
   critter.classList.remove("peek","startled","lookL","lookR","lookYou","blink","waving","showing","screaming","chomping","droop");

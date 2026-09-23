@@ -11,6 +11,7 @@ Analytics: this site uses its own Google Analytics 4 property and web stream. Th
 - `index.html` — the entire site. Vanilla HTML/CSS/JS, no build, no deps.
 - 1000 press responses (IDs 1–1000, stable — do not renumber), 7 escalation acts with rare early "leaks" woven throughout.
 - 19 achievements, escalation director (3px nudge, `please stop` title, supervisor saga, expunged click, flips, shakes, spins, flashes, warps, hides, shape-morphs, rainbow, jitter, footer log). The button goes feral after 200 and hatches at 1000.
+- Persistent nightmare modes that last until the next press (or several): COLOSSUS (page-sized), smol (26px), GHOST (invisible + "Absolutely NOT the button" hover note), FUGITIVE (teleports away from clicks AND hovers for 2–5 presses), endless whirl, inverted. Plus a 6%/press chance of unscheduled weirdness after click 60.
 - Global counter via `countapi.mileshilliard.com` with silent fictional fallback (always pretends global, seed 8,392,114). Polls every 20s so you watch other people's presses land in real time.
 
 ## Growing to 1000

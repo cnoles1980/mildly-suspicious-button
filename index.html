@@ -78,6 +78,20 @@
   #btn.fx-hide{opacity:0;transform:scale(.2) rotate(90deg)}
   #btn.fx-square{border-radius:22px}
   #btn.fx-pill{border-radius:999px;transform:scaleX(1.35)}
+  /* persistent nightmare modes — last until the next press (or several) */
+  #btn.fx-colossus{width:120vmin;height:120vmin;max-width:120vmin;font-size:9vmin;border-width:8px;z-index:5}
+  #btn.fx-microbe{width:26px;height:26px;font-size:0;border-width:2px;padding:0}
+  #btn.fx-ghost{opacity:0}
+  #btn.fx-whirl{animation:spnr 2.5s linear infinite}
+  #btn.fx-neg{filter:invert(1)}
+  #btnWrap.fugitive{transition:transform .16s ease;z-index:6}
+  #ghostNote{display:none;position:absolute;left:50%;top:44%;width:240px;height:240px;
+    margin:-120px 0 0 -120px;border:3px dashed #999;border-radius:50%;z-index:4;cursor:default}
+  #ghostNote span{position:absolute;left:50%;top:108%;transform:translateX(-50%);white-space:nowrap;
+    border:2px dashed #666;background:#fff;padding:8px 14px;font-size:13px;color:var(--grey);opacity:0;transition:opacity .2s}
+  body.haunted #ghostNote{display:block}
+  body.haunted #ghostNote:hover{border-color:#222}
+  body.haunted #ghostNote:hover span{opacity:1}
   @keyframes shk{0%,100%{translate:0 0}15%{translate:-10px 4px}30%{translate:9px -6px}45%{translate:-8px -4px}60%{translate:8px 5px}75%{translate:-5px 2px}90%{translate:4px -2px}}
   @keyframes wob{0%,100%{rotate:0deg}20%{rotate:-9deg}45%{rotate:7deg}70%{rotate:-4deg}90%{rotate:2deg}}
   @keyframes spn{from{rotate:0deg}to{rotate:360deg}}
@@ -129,7 +143,7 @@
   @media (prefers-reduced-motion:reduce){
     #btn,#btnWrap,#msg{transition:none}
     body.flicker{animation:none}
-    #btn.fx-shake,#btn.fx-wobble,#btn.fx-spin{animation:none}
+    #btn.fx-shake,#btn.fx-wobble,#btn.fx-spin,#btn.fx-spin-rev,#btn.fx-flash,#btn.fx-warp,#btn.fx-rainbow,#btn.fx-jitter,#btn.fx-whirl{animation:none}
     #status.consulting .dot{animation:none}
   }
 </style>
@@ -150,6 +164,7 @@
     <div id="stage" aria-label="Button stage">
       <div id="btnWrap"><button id="btn" aria-label="Press the mildly suspicious button">PRESS</button></div>
       <div id="pedestal" aria-hidden="true"></div>
+      <div id="ghostNote" aria-hidden="true"><span>Absolutely NOT the button</span></div>
     </div>
 
     <div id="msg" role="status" aria-live="polite">Go on. Press it. Everyone else did.</div>
@@ -1490,6 +1505,58 @@ function ambientStunt(n){
   else stunt(p, 900);
   if(Math.random()<0.35) stuntMove(Math.round(Math.random()*120-60), Math.round(Math.random()*48-24));
 }
+/* ============================================================ PERSISTENT NIGHTMARE MODES
+   Jarring states that last until the next press (fugitive lasts several).
+   Colossus = page-sized. Microbe = 26px. Ghost = invisible + hover note.
+   Fugitive = teleports when clicked AND when hovered. Whirl = endless spin. */
+let fugitiveLeft = 0;
+function clearModes(){
+  btn.classList.remove("fx-colossus","fx-microbe","fx-ghost","fx-whirl","fx-neg");
+  document.body.classList.remove("haunted");
+  if(fugitiveLeft===0) btnWrap.classList.remove("fugitive");
+}
+function fugitiveTeleport(){
+  const st = $("#stage");
+  const w = st.clientWidth, spanX = Math.max(120, w-170);
+  const x = Math.round(Math.random()*spanX - spanX/2);
+  const y = Math.round(Math.random()*170 - 85);
+  if(reduceMotion){ btnWrap.style.transform = `translateX(${x>0?8:-8}px)`; return; }
+  btnWrap.style.transform = `translate(${x}px,${y}px)`;
+}
+function goColossus(){ setBtnColor(null); btn.classList.add("fx-colossus"); setBtnLabel("I AM LARGE"); log("button is large now."); }
+function goMicrobe(){ setBtnColor(null); btn.classList.add("fx-microbe"); setBtnLabel("smol"); log("button is smol now."); }
+function goGhost(){ btn.classList.add("fx-ghost"); document.body.classList.add("haunted"); setBtnLabel("PRESS"); log("button has left. (it is here.)"); }
+function goWhirl(){ stunt("fx-spin",850); btn.classList.add("fx-whirl"); log("eternal spin engaged."); }
+function goNeg(){ btn.classList.add("fx-neg"); }
+function goFugitive(k){ fugitiveLeft=k; btnWrap.classList.add("fugitive"); setBtnLabel("catch me"); fugitiveTeleport(); log(`it runs for ${k} presses. chase it.`); }
+const PERSIST = {
+  42:()=>goColossus(), 66:()=>goMicrobe(), 88:()=>goGhost(), 111:()=>goFugitive(3),
+  133:()=>goWhirl(), 166:()=>{goColossus();goNeg();}, 190:()=>goFugitive(3), 210:()=>goGhost(),
+  240:()=>goMicrobe(), 268:()=>goWhirl(), 314:()=>goFugitive(4), 360:()=>goGhost(),
+  430:()=>goMicrobe(), 470:()=>goColossus(), 540:()=>goWhirl(), 590:()=>goFugitive(4),
+  640:()=>goGhost(), 690:()=>goMicrobe(), 730:()=>goColossus(), 810:()=>goWhirl(),
+  870:()=>goFugitive(5), 920:()=>goGhost(), 960:()=>goMicrobe(), 990:()=>goColossus()
+};
+const PERSIST_MSGS = {
+  42:"It is large now. Press the large.", 66:"It is small now. Find the small. Press the small.",
+  88:"The button has left. It was never here. (It is here.)", 111:"It runs now. Catch it. Press it.",
+  133:"It spins. It will not stop spinning. Press to forgive it.", 166:"LARGE and INVERTED. No further questions.",
+  190:"It runs again. Faster. Angrier. Rounder.", 210:"Gone again. The pedestal denies everything.",
+  240:"Smol again. The smallness is load-bearing.", 268:"Warped spin cycle. Stick finger in. Press.",
+  314:"It flees for four presses. Count them. Chase them.", 360:"Absolutely not the button. There is no button. (Press.)",
+  430:"Tiny. Furious. Pressable.", 470:"COLOSSUS. The page is the button now.",
+  540:"Eternal spin achieved. Nausea licensed. Press.", 590:"Four presses of chase. Cardio. Press.",
+  640:"The button is elsewhere. Elsewhere is here.", 690:"Smol at scale. Press with precision.",
+  730:"It fills the screen. The screen is honored.", 810:"Whirlpool of red. Do not fall in. Fall in. Press.",
+  870:"Five presses. It has never run this far. Neither have you.", 920:"Vanished before the legend. Find it. Press it.",
+  960:"Nearly legend, very smol. Press carefully.", 990:"Almost legend. LARGE legend. PRESS."
+};
+function randomPersist(){
+  const opts=[goGhost,goMicrobe,goWhirl,()=>goFugitive(2)];
+  opts[Math.floor(Math.random()*opts.length)]();
+  log("unscheduled weirdness. enjoy.");
+}
+
 /* ============================================================ ESCALATION */
 function log(line){
   if(sessionClicks < 75 && !logBox.classList.contains("show")) return; // hidden until late game
@@ -1516,6 +1583,9 @@ function applyEscalation(n){
   ambientStunt(n);
   // label follows timeline unless a stunt just set something spicier this exact click
   setBtnLabel(btnLabelFor(n));
+  // persistent nightmare modes (override label inside their trigger fns)
+  if(PERSIST[n]) PERSIST[n]();
+  if(n>=60 && Math.random()<0.06) randomPersist();
   if(n===100){ document.title = "we can see the tab"; }
   if(n>=50 && n%25===0 && !reduceMotion){
     document.body.classList.add("flicker");
@@ -1527,8 +1597,9 @@ function applyEscalation(n){
     setTimeout(()=>document.body.classList.remove("invert"), 180);
   }
 }
-// button dodges slightly after 35 (hover only, keyboard/screen-reader safe) — moves WRAP
+// button dodges while fugitive — ALWAYS, not just sometimes (hover only, keyboard/screen-reader safe)
 btn.addEventListener("mouseenter", ()=>{
+  if(fugitiveLeft>0 && !reduceMotion){ fugitiveTeleport(); return; }
   if(sessionClicks>=35 && sessionClicks<120 && !reduceMotion && Math.random()<0.5){
     const x = (Math.random()*36-18).toFixed(0), y=(Math.random()*14-7).toFixed(0);
     btnWrap.style.transform = `translate(${x}px,${y}px)`;
@@ -1540,6 +1611,7 @@ btn.addEventListener("mouseenter", ()=>{
 function directorOverride(n, prevGlobal, nextGlobal){
   const ms = crossedMilestone(prevGlobal, nextGlobal);
   if(ms){ unlock("milestone"); return `You were press #${fmt(ms)}.<br>This may become relevant later.`; }
+  if(PERSIST_MSGS[n]) return PERSIST_MSGS[n];
   if(n===25){
     displayOffset -= 1; unlock("expunged");
     log("click expunged by order 7-C");
@@ -1568,6 +1640,11 @@ btn.addEventListener("click", ()=>{
   // supervisor evasion
   if(supervisorPhase===1) unlock("supervisor");
 
+  // fugitive escape check BEFORE clearing: it leaps away from this very press
+  const escaped = fugitiveLeft>0;
+  if(escaped) fugitiveLeft--;
+  clearModes();
+
   sessionClicks++;
   personal++;
   save();
@@ -1586,6 +1663,12 @@ btn.addEventListener("click", ()=>{
   applyEscalation(sessionClicks);
   checkCountAch(sessionClicks);
   if(sessionClicks%10===0) log(`press ${sessionClicks} filed`);
+  // the fugitive always escapes the press that almost caught it
+  if(escaped){
+    if(fugitiveLeft===0){ btnWrap.style.transform=`translateX(${buttonNudge||0}px)`; log("caught. it respects that."); }
+    else log("it escaped. again.");
+    setTimeout(fugitiveTeleport, 200);
+  }
 });
 
 // milestone re-check on async api bounce lives in setGlobal() —
@@ -1599,6 +1682,7 @@ $("#reset").addEventListener("click", ()=>{
   sessionClicks = 0; displayOffset = 0; personal = 0; unlocked = [];
   bag = []; supervisorPhase = 0; buttonNudge = 0;
   rapidStreak = 0; idleStart = Date.now();
+  clearModes();
   save(); refill();
   document.title = origTitle;
   statusBox.className = ""; statusText.textContent = "SYSTEM NOMINAL";

@@ -109,6 +109,22 @@
   #critter.lookYou .pupils{transform:translateY(4px) scale(1.25)}
   #critter .eyes{transition:transform .12s ease;transform-origin:center;transform-box:fill-box}
   #critter.blink .eyes{transform:scaleY(.08)}
+  /* resident v2: waving arm, held sign, screaming/chomping mouth, droopy sleepy eyes */
+  #critter .arm{transform-box:fill-box;transform-origin:50% 10%;transform:rotate(140deg);transition:transform .3s}
+  #critter.waving .arm{animation:wav .45s ease-in-out 4}
+  @keyframes wav{0%,100%{transform:rotate(-30deg)}50%{transform:rotate(25deg)}}
+  #critter .sign{transform-box:fill-box;transform-origin:50% 100%;transform:scale(0);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+  #critter.showing .sign{transform:scale(1)}
+  #signText{font-family:"Courier New",monospace;font-weight:bold;text-anchor:middle;fill:#160304}
+  #critter .mouth{transform-box:fill-box;transform-origin:center;transition:transform .2s}
+  #critter.screaming .mouth{transform:scale(1.7,2.6)}
+  #critter.screaming{animation:jtr .18s linear 4}
+  #critter.chomping .mouth{animation:chmp .32s ease 4}
+  @keyframes chmp{0%,100%{transform:scale(1)}50%{transform:scale(1.4,.3)}}
+  #critter.droop .eyes{transform:scaleY(.35)}
+  #sidekick{position:absolute;left:50%;top:-10px;width:56px;height:54px;z-index:9;pointer-events:none;
+    transform:translateX(-30%) scale(0);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+  #sidekick.show{transform:translateX(-30%) scale(1)}
   @keyframes shk{0%,100%{translate:0 0}15%{translate:-10px 4px}30%{translate:9px -6px}45%{translate:-8px -4px}60%{translate:8px 5px}75%{translate:-5px 2px}90%{translate:4px -2px}}
   @keyframes wob{0%,100%{rotate:0deg}20%{rotate:-9deg}45%{rotate:7deg}70%{rotate:-4deg}90%{rotate:2deg}}
   @keyframes spn{from{rotate:0deg}to{rotate:360deg}}
@@ -187,6 +203,10 @@
             <path d="M82 26 L90 6 L70 20 Z" fill="#e8dcc0" stroke="#160304" stroke-width="2" stroke-linejoin="round"/>
             <ellipse cx="60" cy="64" rx="44" ry="40" fill="#4a0d12" stroke="#160304" stroke-width="3"/>
             <ellipse cx="42" cy="40" rx="10" ry="7" fill="#7a1f28" opacity=".7"/>
+            <g class="arm">
+              <rect x="97" y="58" width="11" height="32" rx="5.5" fill="#4a0d12" stroke="#160304" stroke-width="2.5"/>
+              <circle cx="102" cy="56" r="7" fill="#4a0d12" stroke="#160304" stroke-width="2.5"/>
+            </g>
             <g class="eyes">
               <ellipse cx="43" cy="58" rx="14" ry="16" fill="#fff" stroke="#160304" stroke-width="2.5"/>
               <ellipse cx="77" cy="58" rx="14" ry="16" fill="#fff" stroke="#160304" stroke-width="2.5"/>
@@ -197,8 +217,14 @@
               <circle cx="45" cy="58" r="2" fill="#fff"/>
               <circle cx="79" cy="58" r="2" fill="#fff"/>
             </g>
-            <ellipse cx="60" cy="88" rx="6" ry="8" fill="#160304"/>
+            <ellipse class="mouth" cx="60" cy="88" rx="6" ry="8" fill="#160304"/>
+            <g class="sign">
+              <rect x="18" y="64" width="6" height="32" fill="#8a6f3c" stroke="#160304" stroke-width="2"/>
+              <rect x="2" y="36" width="44" height="30" rx="4" fill="#e8dcc0" stroke="#160304" stroke-width="2.5"/>
+              <text id="signText" x="24" y="57" font-size="13">HI</text>
+            </g>
           </svg>
+          <div id="sidekick" aria-hidden="true"><svg viewBox="0 0 120 114" width="56" height="54"><path d="M38 26 L30 6 L50 20 Z" fill="#e8dcc0"/><path d="M82 26 L90 6 L70 20 Z" fill="#e8dcc0"/><ellipse cx="60" cy="64" rx="44" ry="40" fill="#3d1052" stroke="#0d0218" stroke-width="4"/><ellipse cx="43" cy="58" rx="14" ry="16" fill="#fff"/><ellipse cx="77" cy="58" rx="14" ry="16" fill="#fff"/><circle cx="43" cy="60" r="6" fill="#0a0a0a"/><circle cx="77" cy="60" r="6" fill="#0a0a0a"/><ellipse cx="60" cy="88" rx="6" ry="8" fill="#0d0218"/></svg></div>
         </div>
       </div>
       <div id="pedestal" aria-hidden="true"></div>
@@ -1600,7 +1626,7 @@ function randomPersist(){
    Sometimes the button opens from the middle and something peeks out.
    It looks left. It looks right. It looks at YOU. Then it zips back in.
    Pressing mid-peek = poking it. It will remember that. */
-const maw = $("#maw"), critter = $("#critter");
+const maw = $("#maw"), critter = $("#critter"), sidekick = $("#sidekick"), signText = $("#signText");
 const CREATURE_AT = [150, 333, 555, 777];
 const POKE_LINE = "You poked it.<br>It will remember that.";
 let peekActive = false, peekTimers = [];
@@ -1612,13 +1638,66 @@ function critterLook(cls){
 }
 function endPeek(sealed){
   critterLook(null);
-  critter.classList.remove("peek","startled");
+  critter.classList.remove("peek","startled","waving","showing","screaming","chomping","droop");
+  sidekick.classList.remove("show");
   later(()=>{
     maw.classList.remove("open");
     peekActive = false;
     log(sealed || "it zipped itself back in.");
   }, 550);
 }
+function critterBlink(){
+  critter.classList.add("blink");
+  setTimeout(()=>critter.classList.remove("blink"), 180);
+}
+/* the repertoire: six routines, picked at random every visit */
+function routinePeek(){
+  msgBox.innerHTML = "Something is coming out.<br>Do not press. (Press.)";
+  later(()=>{ critterLook("lookL"); }, 900);
+  later(()=>{ critterLook("lookR"); }, 1600);
+  later(()=>{ critterBlink(); }, 2200);
+  later(()=>{
+    critterLook("lookYou");
+    msgBox.innerHTML = "It sees you.<br>It has always seen you.";
+    log("eye contact established.");
+  }, 2550);
+  later(()=>{ endPeek(); }, 3350);
+}
+function routineWave(){
+  msgBox.innerHTML = "It waves at you.<br>Wave back by pressing.";
+  later(()=>{ critter.classList.add("waving"); critterLook("lookYou"); }, 500);
+  later(()=>{ endPeek("it waves goodbye. it never says goodbye. it waves."); }, 2700);
+}
+function routineSign(){
+  const opts = ["HI","PRESS","RUN","BOO",String(sessionClicks)];
+  const s = opts[Math.floor(Math.random()*opts.length)];
+  signText.textContent = s;
+  signText.setAttribute("font-size", s.length>4 ? 9 : 13);
+  msgBox.innerHTML = "It holds up a sign.<br>It made it itself. From static.";
+  later(()=>{ critter.classList.add("showing"); critterLook("lookYou"); }, 500);
+  later(()=>{ endPeek("it takes its sign home. home is inside the button."); }, 2900);
+}
+function routineScream(){
+  msgBox.innerHTML = "It screams.<br>The scream hums in B flat.";
+  later(()=>{ critter.classList.add("screaming"); critterLook("lookYou"); }, 500);
+  later(()=>{ endPeek("it screamed itself back inside."); }, 2300);
+}
+function routineSnack(){
+  msgBox.innerHTML = "It eats one of your clicks.<br>It needed that. You have plenty.";
+  later(()=>{
+    critter.classList.add("chomping");
+    displayOffset -= 1;
+    personalEl.textContent = fmt(personal + displayOffset);
+    log("the resident ate a click. it says thanks. it does not say thanks.");
+  }, 600);
+  later(()=>{ endPeek("it ate well. it naps now. inside."); }, 2700);
+}
+function routineSleepy(){
+  msgBox.innerHTML = "It is tired.<br>Press quietly.";
+  later(()=>{ critter.classList.add("droop"); }, 800);
+  later(()=>{ endPeek("shh. it sleeps. press quietly."); }, 2700);
+}
+const ROUTINES = [routinePeek, routineWave, routineSign, routineScream, routineSnack, routineSleepy];
 function creatureEvent(){
   if(peekActive) return;
   if(reduceMotion){
@@ -1630,23 +1709,13 @@ function creatureEvent(){
   peekActive = true;
   maw.classList.add("open");
   log("something stirs inside the button.");
+  const r = ROUTINES[Math.floor(Math.random()*ROUTINES.length)];
   later(()=>{
     critter.classList.add("peek");
-    msgBox.innerHTML = "Something is coming out.<br>Do not press. (Press.)";
-  }, 750);
-  later(()=>{ critterLook("lookL"); }, 1650);
-  later(()=>{ critterLook("lookR"); }, 2350);
-  later(()=>{
-    critter.classList.add("blink");
-    setTimeout(()=>critter.classList.remove("blink"), 180);
-  }, 2950);
-  later(()=>{
-    critterLook("lookYou");
     unlock("contact");
-    msgBox.innerHTML = "It sees you.<br>It has always seen you.";
-    log("eye contact established.");
-  }, 3300);
-  later(()=>{ endPeek(); }, 4100);
+    r();
+    if(Math.random()<0.12) later(()=>{ sidekick.classList.add("show"); log("there are two of them now."); }, 1400);
+  }, 750);
 }
 function pokeCritter(){
   clearPeekTimers();
@@ -1790,7 +1859,8 @@ $("#reset").addEventListener("click", ()=>{
   clearModes();
   clearPeekTimers();
   maw.classList.remove("open");
-  critter.classList.remove("peek","startled","lookL","lookR","lookYou","blink");
+  critter.classList.remove("peek","startled","lookL","lookR","lookYou","blink","waving","showing","screaming","chomping","droop");
+  sidekick.classList.remove("show");
   peekActive = false;
   save(); refill();
   document.title = origTitle;

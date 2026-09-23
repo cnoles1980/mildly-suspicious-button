@@ -47,7 +47,7 @@
   #pedestal{width:300px;height:34px;border:3px solid #222;border-radius:50%;
     background:radial-gradient(ellipse at center,#d8d2c2 0%,#b9b2a0 70%,#a09a88 100%);
     margin-top:-26px;box-shadow:0 4px 0 #555}
-  #btnWrap{transition:transform .25s ease;will-change:transform;z-index:2}
+  #btnWrap{transition:transform .25s ease;will-change:transform;z-index:2;position:relative}
   #btn{
     font-family:inherit;font-size:26px;font-weight:bold;letter-spacing:2px;
     color:#fff;background:radial-gradient(circle at 35% 30%,#ef4456,var(--red) 55%,#7a0813 100%);
@@ -92,6 +92,23 @@
   body.haunted #ghostNote{display:block}
   body.haunted #ghostNote:hover{border-color:#222}
   body.haunted #ghostNote:hover span{opacity:1}
+  /* the resident: a slit that opens mid-button + the thing inside */
+  #maw{position:absolute;left:50%;top:50%;width:150px;height:76px;border-radius:50%;
+    transform:translate(-50%,-50%) scaleY(0);transform-origin:center;
+    background:radial-gradient(ellipse at center,#000 55%,#2b0006 85%,transparent 100%);
+    transition:transform .45s ease;z-index:7;pointer-events:none}
+  #maw.open{transform:translate(-50%,-50%) scaleY(1)}
+  #critter{position:absolute;left:50%;top:50%;width:124px;height:114px;z-index:8;pointer-events:none;
+    transform:translate(-50%,-6%) scale(.35);opacity:0;
+    transition:transform .55s cubic-bezier(.34,1.56,.64,1),opacity .35s ease}
+  #critter.peek{transform:translate(-50%,-80%) scale(1);opacity:1}
+  #critter.startled{animation:jtr .25s linear 3}
+  #critter .pupils{transition:transform .45s ease}
+  #critter.lookL .pupils{transform:translateX(-9px)}
+  #critter.lookR .pupils{transform:translateX(9px)}
+  #critter.lookYou .pupils{transform:translateY(4px) scale(1.25)}
+  #critter .eyes{transition:transform .12s ease;transform-origin:center;transform-box:fill-box}
+  #critter.blink .eyes{transform:scaleY(.08)}
   @keyframes shk{0%,100%{translate:0 0}15%{translate:-10px 4px}30%{translate:9px -6px}45%{translate:-8px -4px}60%{translate:8px 5px}75%{translate:-5px 2px}90%{translate:4px -2px}}
   @keyframes wob{0%,100%{rotate:0deg}20%{rotate:-9deg}45%{rotate:7deg}70%{rotate:-4deg}90%{rotate:2deg}}
   @keyframes spn{from{rotate:0deg}to{rotate:360deg}}
@@ -162,7 +179,28 @@
     <div id="global" aria-live="off">This button has been pressed <b id="globalNum">8,392,114</b> times.</div>
 
     <div id="stage" aria-label="Button stage">
-      <div id="btnWrap"><button id="btn" aria-label="Press the mildly suspicious button">PRESS</button></div>
+      <div id="btnWrap"><button id="btn" aria-label="Press the mildly suspicious button">PRESS</button>
+        <div id="maw" aria-hidden="true"></div>
+        <div id="critter" aria-hidden="true">
+          <svg viewBox="0 0 120 114" width="124" height="114" role="img" aria-label="A small resident">
+            <path d="M38 26 L30 6 L50 20 Z" fill="#e8dcc0" stroke="#160304" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M82 26 L90 6 L70 20 Z" fill="#e8dcc0" stroke="#160304" stroke-width="2" stroke-linejoin="round"/>
+            <ellipse cx="60" cy="64" rx="44" ry="40" fill="#4a0d12" stroke="#160304" stroke-width="3"/>
+            <ellipse cx="42" cy="40" rx="10" ry="7" fill="#7a1f28" opacity=".7"/>
+            <g class="eyes">
+              <ellipse cx="43" cy="58" rx="14" ry="16" fill="#fff" stroke="#160304" stroke-width="2.5"/>
+              <ellipse cx="77" cy="58" rx="14" ry="16" fill="#fff" stroke="#160304" stroke-width="2.5"/>
+            </g>
+            <g class="pupils">
+              <circle cx="43" cy="60" r="6" fill="#0a0a0a"/>
+              <circle cx="77" cy="60" r="6" fill="#0a0a0a"/>
+              <circle cx="45" cy="58" r="2" fill="#fff"/>
+              <circle cx="79" cy="58" r="2" fill="#fff"/>
+            </g>
+            <ellipse cx="60" cy="88" rx="6" ry="8" fill="#160304"/>
+          </svg>
+        </div>
+      </div>
       <div id="pedestal" aria-hidden="true"></div>
       <div id="ghostNote" aria-hidden="true"><span>Absolutely NOT the button</span></div>
     </div>
@@ -176,7 +214,7 @@
     <div id="status"><span class="dot"></span><span id="statusText">SYSTEM NOMINAL</span></div>
 
     <details class="ach">
-      <summary>Achievements (<span id="achCount">0/19</span>) — click to inspect</summary>
+      <summary>Achievements (<span id="achCount">0/20</span>) — click to inspect</summary>
       <ul id="achList"></ul>
     </details>
 
@@ -1248,7 +1286,8 @@ const ACHIEVEMENTS = [
   {id:"century3",     name:"Triple Century",                           desc:"Press 300 times.", need:300},
   {id:"veteran",      name:"Button Veteran",                           desc:"Press 500 times. Halfway to legend.", need:500},
   {id:"noreturn",     name:"Point of No Return",                       desc:"Press 750 times. There was a point. It is behind you.", need:750},
-  {id:"millennium",   name:"Millennium Presser",                       desc:"Press 1,000 times. It hatched. You were there.", need:1000}
+  {id:"millennium",   name:"Millennium Presser",                       desc:"Press 1,000 times. It hatched. You were there.", need:1000},
+  {id:"contact",      name:"First Contact",                            desc:"Meet the resident. Or poke it. It remembers.", special:true}
 ];
 
 /* ============================================================ STATE */
@@ -1557,6 +1596,66 @@ function randomPersist(){
   log("unscheduled weirdness. enjoy.");
 }
 
+/* ============================================================ THE RESIDENT
+   Sometimes the button opens from the middle and something peeks out.
+   It looks left. It looks right. It looks at YOU. Then it zips back in.
+   Pressing mid-peek = poking it. It will remember that. */
+const maw = $("#maw"), critter = $("#critter");
+const CREATURE_AT = [150, 333, 555, 777];
+const POKE_LINE = "You poked it.<br>It will remember that.";
+let peekActive = false, peekTimers = [];
+function later(fn, ms){ peekTimers.push(setTimeout(fn, ms)); }
+function clearPeekTimers(){ peekTimers.forEach(clearTimeout); peekTimers = []; }
+function critterLook(cls){
+  critter.classList.remove("lookL","lookR","lookYou");
+  if(cls) critter.classList.add(cls);
+}
+function endPeek(sealed){
+  critterLook(null);
+  critter.classList.remove("peek","startled");
+  later(()=>{
+    maw.classList.remove("open");
+    peekActive = false;
+    log(sealed || "it zipped itself back in.");
+  }, 550);
+}
+function creatureEvent(){
+  if(peekActive) return;
+  if(reduceMotion){
+    msgBox.innerHTML = "Something stirred inside the button.<br>It thought better of it.";
+    log("stirring detected. stirring denied.");
+    unlock("contact");
+    return;
+  }
+  peekActive = true;
+  maw.classList.add("open");
+  log("something stirs inside the button.");
+  later(()=>{
+    critter.classList.add("peek");
+    msgBox.innerHTML = "Something is coming out.<br>Do not press. (Press.)";
+  }, 750);
+  later(()=>{ critterLook("lookL"); }, 1650);
+  later(()=>{ critterLook("lookR"); }, 2350);
+  later(()=>{
+    critter.classList.add("blink");
+    setTimeout(()=>critter.classList.remove("blink"), 180);
+  }, 2950);
+  later(()=>{
+    critterLook("lookYou");
+    unlock("contact");
+    msgBox.innerHTML = "It sees you.<br>It has always seen you.";
+    log("eye contact established.");
+  }, 3300);
+  later(()=>{ endPeek(); }, 4100);
+}
+function pokeCritter(){
+  clearPeekTimers();
+  unlock("contact");
+  log("you touched it. rude. noted.");
+  critter.classList.add("startled");
+  setTimeout(()=>{ endPeek("it zipped itself back in, offended."); }, 650);
+}
+
 /* ============================================================ ESCALATION */
 function log(line){
   if(sessionClicks < 75 && !logBox.classList.contains("show")) return; // hidden until late game
@@ -1586,6 +1685,8 @@ function applyEscalation(n){
   // persistent nightmare modes (override label inside their trigger fns)
   if(PERSIST[n]) PERSIST[n]();
   if(n>=60 && Math.random()<0.06) randomPersist();
+  if(CREATURE_AT.includes(n)) creatureEvent();
+  if(n>=120 && !peekActive && Math.random()<0.03) creatureEvent();
   if(n===100){ document.title = "we can see the tab"; }
   if(n>=50 && n%25===0 && !reduceMotion){
     document.body.classList.add("flicker");
@@ -1645,6 +1746,10 @@ btn.addEventListener("click", ()=>{
   if(escaped) fugitiveLeft--;
   clearModes();
 
+  // poking the resident takes priority over everything else
+  const poked = peekActive;
+  if(poked) pokeCritter();
+
   sessionClicks++;
   personal++;
   save();
@@ -1653,7 +1758,7 @@ btn.addEventListener("click", ()=>{
   counterHit(); // async, optimistic
   const nextGlobal = globalCount;
 
-  let text = directorOverride(sessionClicks, prevGlobal, nextGlobal) || drawMessage(sessionClicks);
+  let text = poked ? POKE_LINE : (directorOverride(sessionClicks, prevGlobal, nextGlobal) || drawMessage(sessionClicks));
   // milestone check may land after async api resolves; also check optimistic locally:
   msgBox.innerHTML = text;
 
@@ -1683,6 +1788,10 @@ $("#reset").addEventListener("click", ()=>{
   bag = []; supervisorPhase = 0; buttonNudge = 0;
   rapidStreak = 0; idleStart = Date.now();
   clearModes();
+  clearPeekTimers();
+  maw.classList.remove("open");
+  critter.classList.remove("peek","startled","lookL","lookR","lookYou","blink");
+  peekActive = false;
   save(); refill();
   document.title = origTitle;
   statusBox.className = ""; statusText.textContent = "SYSTEM NOMINAL";

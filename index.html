@@ -39,7 +39,8 @@
   h1{font-size:20px;margin:0 0 4px;letter-spacing:1px;text-transform:uppercase}
   .sub{font-size:12px;color:var(--grey);margin-bottom:6px}
   #global{font-size:13px;margin:14px 0 4px;min-height:20px}
-  #global b{font-variant-numeric:tabular-nums}
+  #global b{font-variant-numeric:tabular-nums;transition:color .4s}
+  #global.tick b{color:var(--red)}
   /* center stage: big round button */
   #stage{display:flex;flex-direction:column;align-items:center;justify-content:center;
     min-height:380px;padding:18px 0 8px;position:relative}
@@ -1280,16 +1281,38 @@ async function counterHit(){
   }catch(e){ /* silent fallback: keep optimistic count */ }
 }
 function renderGlobal(){ globalNum.textContent = fmt(globalCount); }
-function setGlobal(v){
+function tickFlash(){
+  const line = $("#global");
+  line.classList.add("tick");
+  setTimeout(()=>line.classList.remove("tick"), 900);
+}
+function setGlobal(v, passive){
+  if(v <= globalCount) return; // never tick backwards on a slow poll
   const prev = globalCount;
   globalCount = v; renderGlobal();
   const ms = crossedMilestone(prev, v);
-  if(ms && sessionClicks>0){
-    unlock("milestone");
+  if(!ms){ if(passive) tickFlash(); return; }
+  if(sessionClicks===0 && !passive) return; // silent sync on first load
+  unlock("milestone");
+  if(passive){
+    msgBox.innerHTML = `Press #${fmt(ms)} happened while you watched.<br>You did nothing. It has been noted.`;
+    log(`milestone ${ms} passed while idle`);
+    tickFlash();
+  } else {
     msgBox.innerHTML = `You were press #${fmt(ms)}.<br>This may become relevant later.`;
     log(`milestone ${ms} witnessed`);
   }
 }
+// passive poll: other people's presses tick the counter while you idle
+async function counterPoll(){
+  try{
+    const r = await fetch(`${CONFIG.apiBase}/get/${CONFIG.counterKey}`, {cache:"no-store"});
+    if(!r.ok) return;
+    const j = await r.json();
+    if(typeof j.value === "number"){ lastApiGlobal = j.value; setGlobal(j.value, true); }
+  }catch(e){ /* silent — fiction never breaks */ }
+}
+setInterval(counterPoll, 20000);
 function crossedMilestone(prev, next){
   const cands = [CONFIG.milestoneStart];
   for(let m = CONFIG.milestoneStart; m < next + CONFIG.milestoneStep*2; m += CONFIG.milestoneStep) cands.push(m);
@@ -1568,7 +1591,7 @@ btn.addEventListener("click", ()=>{
 // milestone re-check on async api bounce lives in setGlobal() —
 // the optimistic increment in counterHit() already covers fallback mode.
 
-document.addEventListener("visibilitychange", ()=>{ idleStart = Date.now(); });
+document.addEventListener("visibilitychange", ()=>{ idleStart = Date.now(); if(!document.hidden) counterPoll(); });
 
 /* reset apparatus — forgets local memory only. the global counter never forgets. */
 $("#reset").addEventListener("click", ()=>{

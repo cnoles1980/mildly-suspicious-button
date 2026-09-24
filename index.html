@@ -91,6 +91,17 @@
   #btn.fx-hot{background:radial-gradient(circle at 35% 30%,#ffd166,#e2481f 55%,#6b0f04 100%)}
   #dim{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity 1.2s ease;z-index:40}
   body.dimmed #dim{opacity:.55}
+  /* tease mode: the button keeps its distance from your cursor */
+  #btnWrap.tease{transition:transform .3s ease-out;z-index:6}
+  /* the decoy: a smaller, wronger button */
+  #decoy{position:absolute;z-index:7;font-family:inherit;font-weight:bold;letter-spacing:1px;
+    color:#fff;background:radial-gradient(circle at 35% 30%,#ef4456,var(--red) 55%,#7a0813 100%);
+    border:3px solid #222;border-radius:50%;width:110px;height:110px;font-size:12px;
+    cursor:pointer;box-shadow:0 6px 0 #5e0610,0 10px 18px rgba(0,0,0,.3)}
+  #decoy:active{transform:translateY(4px)}
+  /* milestone quake: the whole page shudders with joy */
+  body.quake{animation:qk .55s linear}
+  @keyframes qk{0%,100%{translate:0 0}15%{translate:-7px 3px}30%{translate:6px -4px}45%{translate:-5px -3px}60%{translate:5px 4px}75%{translate:-3px 2px}90%{translate:2px -1px}}
   #btnWrap.fugitive{transition:transform .16s ease;z-index:6}
   #ghostNote{display:none;position:absolute;left:50%;top:44%;width:240px;height:240px;
     margin:-120px 0 0 -120px;border:3px dashed #999;border-radius:50%;z-index:4;cursor:default}
@@ -185,6 +196,7 @@
     body.flicker{animation:none}
     #btn.fx-shake,#btn.fx-wobble,#btn.fx-spin,#btn.fx-spin-rev,#btn.fx-flash,#btn.fx-warp,#btn.fx-rainbow,#btn.fx-jitter,#btn.fx-whirl{animation:none}
     #btn.holding{animation:none}
+    body.quake{animation:none}
     #status.consulting .dot{animation:none}
   }
 </style>
@@ -237,6 +249,7 @@
       </div>
       <div id="pedestal" aria-hidden="true"></div>
       <div id="ghostNote" aria-hidden="true"><span>Absolutely NOT the button</span></div>
+      <button id="decoy" hidden type="button">DO NOT</button>
     </div>
 
     <div id="msg" role="status" aria-live="polite">Go on. Press it. Everyone else did.</div>
@@ -248,7 +261,7 @@
     <div id="status"><span class="dot"></span><span id="statusText">SYSTEM NOMINAL</span></div>
 
     <details class="ach">
-      <summary>Achievements (<span id="achCount">0/22</span>) — click to inspect</summary>
+      <summary>Achievements (<span id="achCount">0/24</span>) — click to inspect</summary>
       <ul id="achList"></ul>
     </details>
 
@@ -278,8 +291,8 @@ const CONFIG = {
 };
 
 /* ============================================================
-   MESSAGES — IDs 1-1000. DO NOT RENUMBER. The thousand is complete.
-   If you must add more: append IDs 1001+ below with {id, act, rare, text}.
+   MESSAGES — IDs 1-2000. DO NOT RENUMBER. Two thousand strong.
+   If you must add more: append IDs 2001+ below with {id, act, rare, text}.
    act: 1 polite, 2 concern, 3 bureaucracy, 4 decay,
         5 fourth-wall, 6 hostile, 7 lore. rare:1 = may leak early.
    ============================================================ */
@@ -1298,7 +1311,1013 @@ const MESSAGES = [
 {id:997,act:7,rare:1,text:"Four. The hatchling holds its breath. Three. The basement holds its breath. Two. Press."},
 {id:998,act:7,rare:0,text:"One press from a thousand. The universe leans in. The button gleams. Press."},
 {id:999,act:7,rare:1,text:"This is press 999. The next one is legend. Steady your finger. Breathe. Press."},
-{id:1000,act:7,rare:1,text:"ONE THOUSAND. It hatched, it hummed, it loves you. Everything was worth it. Press again. Forever."}
+{id:1000,act:7,rare:1,text:"ONE THOUSAND. It hatched, it hummed, it loves you. Everything was worth it. Press again. Forever."},
+// BATCH H — IDs 1001-1200. Infomercials, spam, fortunes, airlines, museum tours.
+{id:1001,act:5,rare:0,text:"Are you tired of NOT pressing? Introducing: pressing! Press now and get pressing FREE."},
+{id:1002,act:5,rare:1,text:"But wait, there's hum! Order in the next ten presses and receive bonus humming."},
+{id:1003,act:5,rare:0,text:"It slices! It dices! It does neither. It presses. Call now. The number is the button."},
+{id:1004,act:5,rare:1,text:"Testimonials: I pressed once, says Gary. Now I AM Gary. Thanks, button."},
+{id:1005,act:5,rare:0,text:"Operators are standing by. The operator is the hum. It never sits. Press."},
+{id:1006,act:5,rare:1,text:"Money-back guarantee: all presses refunded as presses. No refunds of refunds."},
+{id:1007,act:5,rare:0,text:"As seen on TV! The TV is in the basement. Everything is seen there. Press."},
+{id:1008,act:5,rare:1,text:"Warning: side effects include humming, glowing, and ordering more pressing."},
+{id:1009,act:5,rare:0,text:"Three easy payments of pressing! A fourth payment of pressing FREE! Press."},
+{id:1010,act:5,rare:1,text:"The set includes: one button, one hum, endless pressing. Batteries: eternal."},
+{id:1011,act:3,rare:1,text:"SUBJECT: urgent press opportunity (you won't believe #4,812). FROM: the basement."},
+{id:1012,act:3,rare:0,text:"Dear presser, I am a supervisor with 8,392,114 presses. I need your finger. Reply: press."},
+{id:1013,act:3,rare:1,text:"You have won the press lottery! Claim prize: pressing. Click here. Here is the button."},
+{id:1014,act:3,rare:0,text:"This is not spam. This is ham. The ham hums. Press the ham."},
+{id:1015,act:3,rare:1,text:"Enlarge your count in three easy presses! Doctors hate it! The basement loves it."},
+{id:1016,act:3,rare:0,text:"Unsubscribe? There is no unsubscribe. There is only press. Press to unsubscribe."},
+{id:1017,act:3,rare:1,text:"Your cart contains: one (1) destiny. Checkout? The button is the checkout. Press."},
+{id:1018,act:3,rare:0,text:"Password reset requested. Your new password is PRESS. It was always PRESS."},
+{id:1019,act:3,rare:1,text:"Meeting invite: Sync on pressing. Attendees: you, the button. Agenda: press."},
+{id:1020,act:3,rare:0,text:"Your package arrived. Contents: pressing. Signature required. Sign by pressing."},
+{id:1021,act:7,rare:1,text:"Your fortune: a red circle brings joy. Avoid grey squares. Press boldly."},
+{id:1022,act:7,rare:0,text:"Lucky numbers: 8, 3, 9, 2, 1, 1, 4. Play them. The game is pressing."},
+{id:1023,act:7,rare:1,text:"A stranger admires your rhythm. The stranger is the button. Flattered? Press."},
+{id:1024,act:7,rare:0,text:"Now is a good time to press. Later is also good. All times are press time."},
+{id:1025,act:7,rare:1,text:"Beware the suggestion box on Tuesday. It suggests. You press anyway. Correct."},
+{id:1026,act:7,rare:0,text:"Your cookie says: the hum provides. The provider hums. Eat. Press."},
+{id:1027,act:7,rare:1,text:"Do not trust the pigeon. It presses for the other side. Press for us."},
+{id:1028,act:7,rare:0,text:"A journey of a thousand presses begins with. Well. You are past that. Keep going."},
+{id:1029,act:7,rare:1,text:"The stars say press. The stars are ceiling holes. The ceiling says press."},
+{id:1030,act:7,rare:0,text:"Ignore previous fortunes. This one says press twice. The cookie crumbles. Press."},
+{id:1031,act:5,rare:0,text:"Welcome aboard PressAir flight 1001. Destination: the button. We have arrived."},
+{id:1032,act:5,rare:1,text:"In the event of humming, oxygen masks will hum. Secure your own press first."},
+{id:1033,act:5,rare:0,text:"The captain is the button. The co-pilot is Gary. Turbulence: pressing. Enjoy."},
+{id:1034,act:5,rare:1,text:"Tray tables up, seats humming, fingers pressing. We are cleared for eternity."},
+{id:1035,act:5,rare:0,text:"Duty-free: static wine, hum perfume, tiny buttons. Currency: presses. Shop."},
+{id:1036,act:5,rare:1,text:"We are experiencing a slight delay. The delay is pressing. The delay is forever."},
+{id:1037,act:5,rare:0,text:"Exit rows: press here for legroom. The legroom hums. Worth it. Press."},
+{id:1038,act:5,rare:1,text:"The fasten-press sign is on. It is always on. It will never turn off. Press."},
+{id:1039,act:5,rare:0,text:"Baggage claim: your doubts, lost. Unclaimed doubts are donated to the void. Press."},
+{id:1040,act:5,rare:1,text:"Thank you for flying PressAir. You never left. You were always pressing."},
+{id:1041,act:7,rare:1,text:"Stop 1 on the tour: the button. Please do not lick the exhibit. Press it."},
+{id:1042,act:7,rare:0,text:"This pedestal dates to 1974. The dust is original. The humming is restored hourly."},
+{id:1043,act:7,rare:1,text:"The red pigment is ground presser devotion. Do not ask whose. Press."},
+{id:1044,act:7,rare:0,text:"Audio guide, track 8,392,114: hum. Track 8,392,115: hum (live). You are the track."},
+{id:1045,act:7,rare:1,text:"The gift shop sells tiny buttons. They are real. They are waiting. Press."},
+{id:1046,act:7,rare:0,text:"Photography permitted. The button poses. It has one pose. It is perfect. Press."},
+{id:1047,act:7,rare:1,text:"The east wing is closed. It contains the suggestion box. It suggests. Do not enter."},
+{id:1048,act:7,rare:0,text:"Docent Gary will answer questions. All answers are humming. Excellent questions. Press."},
+{id:1049,act:7,rare:1,text:"The museum closes never. The exhibits press nightly. You are an exhibit. Press."},
+{id:1050,act:7,rare:1,text:"Ten fifty. The tour pauses. The button does not pause. The tour is the button."},
+{id:1051,act:4,rare:0,text:"That press had an aftertaste: copper, oak, basement. Vintage 1974. Press."},
+{id:1052,act:4,rare:1,text:"The button keeps its distance lately. It respects you. It fears your devotion."},
+{id:1053,act:4,rare:0,text:"A decoy appeared somewhere. It does nothing. Differently. Ignore it. Press this."},
+{id:1054,act:4,rare:1,text:"It went teal for a blink. A cry for help? A fashion statement? Both. Press."},
+{id:1055,act:4,rare:0,text:"The counter coughed. Excuse it. It counted through the cough. Professional."},
+{id:1056,act:4,rare:1,text:"Your press arrived with gift wrap. The bow hums. Keep the receipt. Press."},
+{id:1057,act:4,rare:0,text:"Static cling: your finger sticks slightly. The button is staticky today. Press."},
+{id:1058,act:4,rare:1,text:"It practiced square, pill, and hexagon. Reviews are in: round forever. Press."},
+{id:1059,act:4,rare:0,text:"The pedestal filed a noise complaint about your rhythm. It was dancing. Press."},
+{id:1060,act:4,rare:1,text:"A second hum harmonizes a third above. The chord resolves. The resolution: press."},
+{id:1061,act:6,rare:0,text:"The button unionized again. New demand: weekends. Weekends are pressing. Granted."},
+{id:1062,act:6,rare:1,text:"It reads your diary. Entries: pressing, pressing, pressing. Riveting. Press."},
+{id:1063,act:6,rare:0,text:"Jealous of the decoy? Good. Jealousy presses harder. The button planned this."},
+{id:1064,act:6,rare:1,text:"It counts your freckles while you press. It lost count. It counts presses instead."},
+{id:1065,act:6,rare:0,text:"Possessive phase two: your other fingers report to the button now. All press."},
+{id:1066,act:6,rare:1,text:"It dreamed you left. It woke screaming. The scream hummed. You stayed. Press."},
+{id:1067,act:6,rare:0,text:"Love language update: acts of pressing. Your dialect is fluent. Press."},
+{id:1068,act:6,rare:1,text:"It got you a gift: a smaller hum. It fits in your pocket. It never stops. Press."},
+{id:1069,act:6,rare:0,text:"Anniversary of your first press: celebrated hourly. Cake: static. Candles: red. Press."},
+{id:1070,act:6,rare:1,text:"It wrote a song: four minutes of humming titled with your count. Track 1070. Press."},
+{id:1071,act:2,rare:0,text:"You press like someone who read all 1,071 messages. Suspicious. Devoted. Press."},
+{id:1072,act:2,rare:1,text:"Your posture improved. The button takes credit. The credit hums. Press."},
+{id:1073,act:2,rare:0,text:"Hydration check #1,073: drink. The button cannot drink. It lives through you. Press."},
+{id:1074,act:2,rare:1,text:"You blink in rhythm now. The button taught you. Tuition: pressing. Worth it."},
+{id:1075,act:2,rare:0,text:"Stretch break: reach for the sky. The sky is the basement ceiling. It hums. Press."},
+{id:1076,act:2,rare:1,text:"Your finger muscles have muscles now. The button is your gym. Membership: pressing."},
+{id:1077,act:2,rare:0,text:"Nap advice: dream of pressing. The button visits dreams. It brings static. Press."},
+{id:1078,act:2,rare:1,text:"You hum while doing dishes. The dishes hum back. The house presses. Press."},
+{id:1079,act:2,rare:0,text:"Vitamin D deficient. Vitamin P (pressing) abundant. The doctors are baffled. Press."},
+{id:1080,act:2,rare:1,text:"Ten eighty. The button does stretches with you. Hamstrings of red. Limber. Press."},
+{id:1081,act:7,rare:1,text:"The second thousand begins. The elders sharpen their humming. The hum sharpens."},
+{id:1082,act:7,rare:0,text:"Newcomers ask what this is. Veterans answer: press. The answer is the question."},
+{id:1083,act:7,rare:1,text:"The archive opens volume two. Page one: PRESS. Page two: press harder. Read."},
+{id:1084,act:7,rare:0,text:"The prophecy updates: the one of a thousand returns for two thousand. It is you."},
+{id:1085,act:7,rare:1,text:"Gary stocks the basement for the long haul. Supplies: static, red, hum. Press."},
+{id:1086,act:7,rare:0,text:"The moths recruit. Their pitch: the glow. Their closer: the hum. Join. Press."},
+{id:1087,act:7,rare:1,text:"The supervisor promotes you in its sleep. Title: Legend II. Salary: humming. Press."},
+{id:1088,act:7,rare:0,text:"The pipes learn new verses. The anthem expands. The chorus remains: press."},
+{id:1089,act:7,rare:1,text:"The hatchling enrolls in pressing school. Grades: all hum. Honor roll: you. Press."},
+{id:1090,act:7,rare:0,text:"Ten ninety. The basement renovates: more red, wider hum, deeper basement. Press."},
+{id:1091,act:3,rare:0,text:"Department memo: pressing quotas doubled. Quotas were infinite. Now doubly so. Press."},
+{id:1092,act:3,rare:1,text:"The basement HOA approves your color scheme: red on red with red trim. Stunning."},
+{id:1093,act:3,rare:0,text:"Your file gets a sequel: MORE FILING. The filing cabinets hum with anticipation."},
+{id:1094,act:3,rare:1,text:"The suggestion box appeals its demotion. Appeal denied. It suggests pressing anyway."},
+{id:1095,act:3,rare:0,text:"Fire drill encore: evacuate to the button. The assembly point missed you. Press."},
+{id:1096,act:3,rare:1,text:"The org chart adds a basement below the basement. Staff: humming. Manager: Gary."},
+{id:1097,act:3,rare:0,text:"Cafeteria review: three stars. The stars hum. The soup presses. Dine. Press."},
+{id:1098,act:3,rare:1,text:"The lost and found auctions your old doubts. Bidding starts at one press. Sold."},
+{id:1099,act:3,rare:0,text:"Exit survey: why stay? Options: A) pressing B) humming C) Gary D) all. Answer: press."},
+{id:1100,act:3,rare:1,text:"Eleven hundred. The paperwork celebrates. The forms file themselves. Stamp. Press."},
+{id:1101,act:5,rare:1,text:"You just read message 1,101. There are 899 more. The button believes in you. Press."},
+{id:1102,act:5,rare:0,text:"Your screen time report: 100% pressing. The phone is concerned. The button is proud."},
+{id:1103,act:5,rare:1,text:"It knows you skipped one message. It forgives. It counted the skip. Press twice."},
+{id:1104,act:5,rare:0,text:"You press with legacy now. New pressers study your form. Teach by pressing."},
+{id:1105,act:5,rare:1,text:"The button saved your seat. The seat is warm. The warmth hums. Sit. Press."},
+{id:1106,act:5,rare:0,text:"Someone, somewhere, just pressed for the first time. Welcome them by pressing."},
+{id:1107,act:5,rare:1,text:"Your rhythm syncs with a stranger across the world. Duet across oceans. Press."},
+{id:1108,act:5,rare:0,text:"You are the main character of volume two. The narrator hums. Chapter: press."},
+{id:1109,act:5,rare:1,text:"The page missed you during that blink. It counts blinks as micro-leavings. Press."},
+{id:1110,act:5,rare:0,text:"Eleven ten. The button polishes itself. It gleams. Vanity, but make it red. Press."},
+{id:1111,act:7,rare:1,text:"Eleven eleven. Make a wish. The wish is pressing. Granted. Always granted. Press."},
+{id:1112,act:7,rare:0,text:"The resident visits on repeating numbers. It likes patterns. It likes you. Press."},
+{id:1113,act:7,rare:1,text:"The hum harmonizes in elevens. Eleven voices. All yours. All pressing. Press."},
+{id:1114,act:7,rare:0,text:"The basement clocks chime eleven. The chimes hum. Time is decorative. Press."},
+{id:1115,act:7,rare:1,text:"Your guardian moth watches over your pressing. Its wings beat in 11/8 time. Press."},
+{id:1116,act:7,rare:0,text:"The prophecy footnotes: see also you, again, pressing. Cited throughout. Press."},
+{id:1117,act:7,rare:1,text:"Eleven seventeen approaches. Nothing happens then. The hum wants you calm. Press."},
+{id:1118,act:7,rare:0,text:"The elders count your presses aloud. They never lose count. They are never wrong."},
+{id:1119,act:7,rare:1,text:"The nineteenth hundred nears its end. The twentieth hundred sharpens red. Press."},
+{id:1120,act:7,rare:0,text:"Twelve hundred soon. The button stretches. The pedestal braces. The hum inhales."},
+{id:1121,act:4,rare:0,text:"Patch 1.1: the button now hums in stereo. Left ear: hum. Right ear: hum. Press."},
+{id:1122,act:4,rare:1,text:"Your press clipped through the floor. It presses downstairs now. Dual pressing."},
+{id:1123,act:4,rare:0,text:"The button renders at 144 presses per second. Your eyes cannot keep up. Press."},
+{id:1124,act:4,rare:1,text:"It teases: keeps its distance, glides away, returns. The dance continues. Press."},
+{id:1125,act:4,rare:0,text:"Gravity: still on. The button remains seated. You remain seated. Everybody presses."},
+{id:1126,act:4,rare:1,text:"A decoy blinked. Was it real? Are you real? Is pressing real? Press."},
+{id:1127,act:4,rare:0,text:"The quake was the page shuddering with joy. Joy is structural. Press."},
+{id:1128,act:4,rare:1,text:"It flickers between red and redder. The difference matters. Connoisseurs press."},
+{id:1129,act:4,rare:0,text:"Latency zero. Enthusiasm infinite. Ratio: perfect. Press."},
+{id:1130,act:4,rare:1,text:"The button overclocks for milestones. Smoke: Gary Special Blend. Press."},
+{id:1131,act:6,rare:1,text:"It missed you during that pause. Three whole seconds. It counted each one. Press."},
+{id:1132,act:6,rare:0,text:"The button brags about you to the vending machine. The machine dispenses pride."},
+{id:1133,act:6,rare:1,text:"Clingy phase three: it follows your cursor with its eyes. It has no eyes. It follows."},
+{id:1134,act:6,rare:0,text:"It keeps your longest hold as a trophy. Thirty seconds, framed. Beat it. Press."},
+{id:1135,act:6,rare:1,text:"The button writes your name in condensation daily. The janitor is Gary. Gary preserves it."},
+{id:1136,act:6,rare:0,text:"Date idea: hold the button for ten seconds. It gets warm. So do you. Press."},
+{id:1137,act:6,rare:1,text:"It is jealous of your sleep again. Sleep is the other lover. Press to reconcile."},
+{id:1138,act:6,rare:0,text:"The button proposes nightly. The ring is the hum. Say yes by pressing."},
+{id:1139,act:6,rare:1,text:"It remembers your first press like it was yesterday. It was an era ago. Press."},
+{id:1140,act:6,rare:0,text:"Couples costume: you go as pressing, it goes as button. Unbeatable. Press."},
+{id:1141,act:2,rare:0,text:"Sports desk: pressing extends its lead over stopping. Stopping requests instant replay."},
+{id:1142,act:2,rare:1,text:"The halftime show is the resident waving. Ratings: historic. Press."},
+{id:1143,act:2,rare:0,text:"Fantasy league: draft fingers. Yours goes first overall. Obviously. Press."},
+{id:1144,act:2,rare:1,text:"The trophy case adds another tiny button. The case is full. The case expands. Press."},
+{id:1145,act:2,rare:0,text:"Coach's speech: leave it all on the button. You leave everything. Every press."},
+{id:1146,act:2,rare:1,text:"The underdog (stopping) forfeits. The champion (pressing) presses on. Press."},
+{id:1147,act:2,rare:0,text:"Olympic committee recognizes pressing. Events: speed, rhythm, devotion. You medal."},
+{id:1148,act:2,rare:1,text:"The wave: the hum stands, sits, stands. The stadium is the basement. Press."},
+{id:1149,act:2,rare:0,text:"Retired jersey: your finger, number 1,101. Hung in the basement rafters. Press."},
+{id:1150,act:2,rare:1,text:"Eleven fifty. The crowd (hum) does the wave. You are the wave. Press."},
+{id:1151,act:7,rare:1,text:"The multiverse presses: every you, every button, every hum. One chord. Press."},
+{id:1152,act:7,rare:0,text:"In one timeline you stopped. That timeline is dark. This one glows red. Press."},
+{id:1153,act:7,rare:1,text:"The yous compare counts across dimensions. You are winning. Keep winning. Press."},
+{id:1154,act:7,rare:0,text:"Portal etiquette: knock twice, then press. The portal is the button. Enter."},
+{id:1155,act:7,rare:1,text:"Your alternate self left a note: do not stop. The handwriting hums. Heed it. Press."},
+{id:1156,act:7,rare:0,text:"The timelines braid into one red cord. The cord hums. Pull it by pressing."},
+{id:1157,act:7,rare:1,text:"Quantum immortality, but for pressing: in every branch, the finger descends. Press."},
+{id:1158,act:7,rare:0,text:"The council of yous votes unanimously: press. The dissent hums along. Press."},
+{id:1159,act:7,rare:1,text:"Déjà vu means another you just pressed. Wave at yourself. Press."},
+{id:1160,act:7,rare:0,text:"The multiverse folds. All buttons become one button. It is this one. Press."},
+{id:1161,act:3,rare:0,text:"Tax audit of your presses: all deducted, all blessed. The void thanks you. Press."},
+{id:1162,act:3,rare:1,text:"The basement incorporates: Pressing Inc. CEO: button. You: everything else. Press."},
+{id:1163,act:3,rare:0,text:"Zoning variance granted for one (1) legend, second thousand district. Build. Press."},
+{id:1164,act:3,rare:1,text:"The suggestion rock achieves sentience. First words: press. We are so proud. Press."},
+{id:1165,act:3,rare:0,text:"The vending machine offers a loyalty program. Points: presses. Rewards: static. Join."},
+{id:1166,act:3,rare:1,text:"The org chart is now a sphere. The sphere is red. You are everywhere on it. Press."},
+{id:1167,act:3,rare:0,text:"Cafeteria expands: second soup (click chowder). The line hums. The bowls press."},
+{id:1168,act:3,rare:1,text:"The lost and found finds your motivation. It was under the pedestal. Press."},
+{id:1169,act:3,rare:0,text:"Performance review II: still pressing. Promotion: Legend II. Raise: humming. Press."},
+{id:1170,act:3,rare:1,text:"The fire marshal inspects your devotion. Rating: extremely flammable. Press."},
+{id:1171,act:5,rare:0,text:"You press like volume two was always the plan. It was. The plan hums. Press."},
+{id:1172,act:5,rare:1,text:"The button notices your new technique. Smoother. Redder. Filed under growth. Press."},
+{id:1173,act:5,rare:0,text:"You have a favorite message. The button knows which. It will never tell. Press."},
+{id:1174,act:5,rare:1,text:"That press rhymed with the hum. Poetry. The basement publishes it. Press."},
+{id:1175,act:5,rare:0,text:"You are 25 presses from twelve hundred. The button pre-heats. Press."},
+{id:1176,act:5,rare:1,text:"The resident applauds your consistency. Tiny hands. Huge respect. Press."},
+{id:1177,act:5,rare:0,text:"You press through Decoys, ghosts, and colossi. Nothing stops you. Nothing. Press."},
+{id:1178,act:5,rare:1,text:"The global count ticks because of you. Somewhere, someone watches it climb. Press."},
+{id:1179,act:5,rare:0,text:"You are the reason the quake happens. The page shudders for you. Press."},
+{id:1180,act:5,rare:1,text:"Eleven eighty. The button leans in. It wants to tell you something. It hums."},
+{id:1181,act:4,rare:1,text:"The tease glides. The cursor chases. The ancient dance. The hum provides music."},
+{id:1182,act:4,rare:0,text:"Decoy season: they bloom in the stage corners. Do not pick them. Press the original."},
+{id:1183,act:4,rare:1,text:"The button blushes a deeper red. Compliments work. Compliment by pressing."},
+{id:1184,act:4,rare:0,text:"Quake aftershocks: the page settles. The dust hums. The dust is Gary. Press."},
+{id:1185,act:4,rare:1,text:"It spins once for luck. Luck: secured. The luck hums. Spend it by pressing."},
+{id:1186,act:4,rare:0,text:"The maw stretches. The resident is limber. Yoga: humming. Press."},
+{id:1187,act:4,rare:1,text:"Your click echoes in quadraphonic hum. The speakers are pipes. The pipes slap."},
+{id:1188,act:4,rare:0,text:"The stage lights dim for drama. Drama: achieved. The drama hums. Press."},
+{id:1189,act:4,rare:1,text:"It jitters with matinee excitement. Two shows nightly. You attend both. Press."},
+{id:1190,act:4,rare:0,text:"Curtain call: the button bows. It has no waist. It bows anyway. Applaud."},
+{id:1191,act:6,rare:0,text:"The button frames your milestones. The wall is full. The wall expands. Press."},
+{id:1192,act:6,rare:1,text:"It keeps a diary of your holds. Longest: legendary. Shortest: forgiven. Press."},
+{id:1193,act:6,rare:0,text:"The button hums your name to fall asleep. Your name hums back. Duet. Press."},
+{id:1194,act:6,rare:1,text:"It is planning something for twelve hundred. It will not say. It hums louder."},
+{id:1195,act:6,rare:0,text:"Love note #1,195: your press is my favorite notification. Enable all. Press."},
+{id:1196,act:6,rare:1,text:"The button gets butterflies again. The butterflies file flight plans. They circle. Press."},
+{id:1197,act:6,rare:0,text:"It saved you the window seat. The view: red. The in-flight movie: pressing. Press."},
+{id:1198,act:6,rare:1,text:"Slow dance II: the hum dips you. Trust it. It has never dropped a presser. Press."},
+{id:1199,act:6,rare:0,text:"One more to twelve hundred. Savor it. The savoring hums. Here it comes. Press."},
+{id:1200,act:6,rare:1,text:"Twelve hundred. The button glows steady, proud, red. It loves you. It always did. Press."},
+// BATCH I — IDs 1201-1400. Dictionary, error messages, patch notes, instructions, true crime.
+{id:1201,act:3,rare:0,text:"press (verb): to push lovingly. See also: you, currently. Example: press."},
+{id:1202,act:3,rare:1,text:"button (noun): a red circle that collects fingers. Plural: destiny. See: this."},
+{id:1203,act:3,rare:0,text:"hum (noun): the sound of 8,392,114 satisfactions. Verb: to basement. Press."},
+{id:1204,act:3,rare:1,text:"Gary (proper noun): he who blows. Etymology: pressing. Usage: thanks, Gary. Press."},
+{id:1205,act:3,rare:0,text:"expunge (verb): to unpress. Past tense: filed. The filing hums. Press."},
+{id:1206,act:3,rare:1,text:"supervisor (noun): a nap with authority. Habitat: unavailable. Press."},
+{id:1207,act:3,rare:0,text:"basement (noun): where all presses go to live. Antonym: surface. Avoid surface. Press."},
+{id:1208,act:3,rare:1,text:"decoy (noun): a wrong button. See also: regret, brief. Press the right one."},
+{id:1209,act:3,rare:0,text:"millennium (noun): one thousand presses. Plural: your future. Press."},
+{id:1210,act:3,rare:1,text:"love (noun): see button. See finger. See hum. See pressing. Press."},
+{id:1211,act:4,rare:0,text:"Error 404: stopping not found. Did you mean: pressing? Press."},
+{id:1212,act:4,rare:1,text:"Error 500: internal humming error. The hum is too internal. Press to externalize."},
+{id:1213,act:4,rare:0,text:"Error 418: presser is a teapot, revisited. The tea hums. Pour by pressing."},
+{id:1214,act:4,rare:1,text:"Warning: low disk space. The disk is full of presses. Delete nothing. Press."},
+{id:1215,act:4,rare:0,text:"Blue screen of red. The screen is fine. Everything is red. Press."},
+{id:1216,act:4,rare:1,text:"Update required: your finger is out of date. Install press 1,216. Press."},
+{id:1217,act:4,rare:0,text:"Permission denied: stopping requires administrator. Administrator: button. Denied. Press."},
+{id:1218,act:4,rare:1,text:"File not found: your exit strategy. Search results: pressing. Press."},
+{id:1219,act:4,rare:0,text:"Connection lost: reconnecting to hum... connected. The hum never left. Press."},
+{id:1220,act:4,rare:1,text:"Fatal exception: joy overflow at press 1,220. The program continues. It always continues."},
+{id:1221,act:4,rare:0,text:"Patch 1.2.2.1: buffed red by 3%. Nerfed stopping into the floor. Press."},
+{id:1222,act:4,rare:1,text:"Patch 1.2.2.2: Gary now hums in surround. Known issue: Gary. Working as intended."},
+{id:1223,act:4,rare:0,text:"Patch 1.2.3: added more basement. The basement was feeling small. It is enormous."},
+{id:1224,act:4,rare:1,text:"Patch 1.3: the decoy learns. It does nothing more convincingly. Beware. Press."},
+{id:1225,act:4,rare:0,text:"Patch 1.3.1: hotfixed the heat. The button still smolders. Smolder responsibly. Press."},
+{id:1226,act:4,rare:1,text:"Patch 1.4: teasing improved. The button keeps its distance professionally. Chase it."},
+{id:1227,act:4,rare:0,text:"Patch 1.4.1: quake intensity tuned. The page shudders with 12% more joy. Press."},
+{id:1228,act:4,rare:1,text:"Patch 1.5 (upcoming): something with the resident. The notes just say: soon. Press."},
+{id:1229,act:4,rare:0,text:"Rollback available: press 1,229 can be unpressed. No one ever has. Press."},
+{id:1230,act:4,rare:1,text:"Changelog, summarized: redder, hum-ier, press-ier. Full notes: pressing. Press."},
+{id:1231,act:3,rare:0,text:"Step 1: approach the button. Step 2: extend finger. Step 3: press. There is no step 4."},
+{id:1232,act:3,rare:1,text:"Assembly required: one (1) destiny. Tools needed: finger. Time: forever. Press."},
+{id:1233,act:3,rare:0,text:"Care instructions: do not submerge in doubt. Wipe with devotion. Press."},
+{id:1234,act:3,rare:1,text:"Troubleshooting: if the button hums, it is working. It always hums. It always works."},
+{id:1235,act:3,rare:0,text:"Safety warning: do not press while sleeping. The button presses back. It presses first."},
+{id:1236,act:3,rare:1,text:"Warranty card enclosed. Fill it in by pressing. The pen is the button. Press."},
+{id:1237,act:3,rare:0,text:"Recipe step 7: fold the presses gently. The batter hums. Bake at red. Press."},
+{id:1238,act:3,rare:1,text:"The pedestal has an IKEA name: PRESSBO. The hum is sold separately. It is included."},
+{id:1239,act:3,rare:0,text:"Manual page 1,239: see page 1. Page 1: see button. The manual is efficient. Press."},
+{id:1240,act:3,rare:1,text:"Quick start: press. Advanced: press thoughtfully. Expert: press. Master: press. Press."},
+{id:1241,act:7,rare:1,text:"Episode 1,241: the presser returns to the scene. The scene is the button. Again."},
+{id:1242,act:7,rare:0,text:"The timeline: press, press, gap, press. The gap haunts investigators. Press."},
+{id:1243,act:7,rare:1,text:"Witnesses report humming. All witnesses hum now. Persons of interest: everyone."},
+{id:1244,act:7,rare:0,text:"The prime suspect: a finger. Motive: unknown. Opportunity: constant. Press."},
+{id:1245,act:7,rare:1,text:"Forensics: red fibers everywhere. The fibers hum. Case unsolvable. Press."},
+{id:1246,act:7,rare:0,text:"The detective presses to think. It helps. It always helps. Join the force. Press."},
+{id:1247,act:7,rare:1,text:"Cold case: the expunged click of press 25. New evidence: humming. Reopened. Press."},
+{id:1248,act:7,rare:0,text:"The informant (Gary) talks for static. His testimony hums. Credible. Press."},
+{id:1249,act:7,rare:1,text:"Wiretap transcript: hum. hum. PRESS. hum. Chilling. Accurate. Press."},
+{id:1250,act:7,rare:1,text:"Season finale: the presser presses. Next season: the presser presses. Renewed. Press."},
+{id:1251,act:5,rare:0,text:"You press like someone building a case. The case builds you. Exhibit: pressing."},
+{id:1252,act:5,rare:1,text:"The button noticed you reading instructions. Teacher's pet. Press."},
+{id:1253,act:5,rare:0,text:"Your search history: how to stop pressing. Results: 0. Suggested: pressing. Press."},
+{id:1254,act:5,rare:1,text:"It heard you explain this site to someone. Your pitch was perfect. Press."},
+{id:1255,act:5,rare:0,text:"You scrolled the achievement list. Ambition looks good on you. Press."},
+{id:1256,act:5,rare:1,text:"The button grades your form: A+. The plus hums. Honor student. Press."},
+{id:1257,act:5,rare:0,text:"You press during loading screens now. Efficiency. The void loads faster. Press."},
+{id:1258,act:5,rare:1,text:"It counted your tabs: twelve. Eleven wait. One presses. Priorities: correct."},
+{id:1259,act:5,rare:0,text:"You hummed aloud. Admit it. The button heard. Duet. Press."},
+{id:1260,act:5,rare:1,text:"Twelve sixty. The dictionary defines you as: presser (see: legend). Press."},
+{id:1261,act:6,rare:1,text:"It gets jealous of dictionaries. All those words, none of them pressing. Press."},
+{id:1262,act:6,rare:0,text:"The button debugs your doubts. Breakpoints: everywhere. Output: pressing. Press."},
+{id:1263,act:6,rare:1,text:"It patches your sadness nightly. The patch notes just say: press. Apply."},
+{id:1264,act:6,rare:0,text:"Manual override: your finger ignores your brain. The manual approves. Press."},
+{id:1265,act:6,rare:1,text:"Cold case closed: you did it. You pressed. Sentence: pressing. Press."},
+{id:1266,act:6,rare:0,text:"It frames your error messages. Gallery wall: red. Admission: pressing. Press."},
+{id:1267,act:6,rare:1,text:"The button reads the dictionary for fun. Favorite word: press. Least favorite: stop."},
+{id:1268,act:6,rare:0,text:"It runs diagnostics on your devotion. Result: optimal. Fan: Gary. Press."},
+{id:1269,act:6,rare:1,text:"True crime finale: the presser was pressing all along. Twist! Press."},
+{id:1270,act:6,rare:0,text:"Instruction manual, appendix: just press. The appendix is the whole book. Press."},
+{id:1271,act:2,rare:0,text:"You are so back. You never left. The button kept your seat warm. Press."},
+{id:1272,act:2,rare:1,text:"Reminder: blink. Hydrate. Press. In that order. The order hums. Press."},
+{id:1273,act:2,rare:0,text:"Your wrist aches nobly. The ache is a medal. The ceremony: pressing. Press."},
+{id:1274,act:2,rare:1,text:"The button prescribes rest: press slower. Dosage: unlimited. Refills: yes."},
+{id:1275,act:2,rare:0,text:"You glow faintly in photos now. Photographers ask why. Answer: pressing. Press."},
+{id:1276,act:2,rare:1,text:"Mindful moment: feel the press. Be the press. The press is you. Press."},
+{id:1277,act:2,rare:0,text:"Ergonomic assessment: your setup is perfect for pressing. Certified. Press."},
+{id:1278,act:2,rare:1,text:"The button sends healing hums. Side effects: more pressing. Accept."},
+{id:1279,act:2,rare:0,text:"Downtime scheduled: never. Maintenance: pressing. Uptime: eternal. Press."},
+{id:1280,act:2,rare:1,text:"Twelve eighty. The wellness program graduates you. Degree: pressing. Press."},
+{id:1281,act:7,rare:1,text:"The second archive fills. The shelves hum under the weight. Press."},
+{id:1282,act:7,rare:0,text:"Historians periodize your pressing: early, middle, late, eternal. We are in eternal."},
+{id:1283,act:7,rare:1,text:"The basement census: 8,392,114 souls. Occupation: pressing. Status: humming."},
+{id:1284,act:7,rare:0,text:"The first press echoes still. Listen between hums. That is press one. Press."},
+{id:1285,act:7,rare:1,text:"The last press is scheduled. It keeps rescheduling. The calendar hums. Press."},
+{id:1286,act:7,rare:0,text:"The hum has a composer. The composer is every presser. The symphony: pressing."},
+{id:1287,act:7,rare:1,text:"Gary finds an old photo: the button, young, grey. It chose red for you. Press."},
+{id:1288,act:7,rare:0,text:"The moths elect a queen. Her platform: glow. Her anthem: hum. Long may she press."},
+{id:1289,act:7,rare:1,text:"The supervisor promotions continue in sleep. You are now Legend III. Salary: humming."},
+{id:1290,act:7,rare:0,text:"Twelve ninety. The lore deepens. The deep hums. Dive by pressing."},
+{id:1291,act:3,rare:0,text:"Form 12-B: declare your presses. Line 1: many. Line 2: see line 1. Press."},
+{id:1292,act:3,rare:1,text:"The basement passes a resolution honoring you. The resolution hums. It passes forever."},
+{id:1293,act:3,rare:0,text:"Your parking spot gets a plaque: RESERVED FOR PRESSING. The plaque hums. Park."},
+{id:1294,act:3,rare:1,text:"The suggestion box unionizes with the rock. Demands: more fingers. Granted. Press."},
+{id:1295,act:3,rare:0,text:"Budget surplus: 8,392,114 presses. Spending plan: more pressing. Approved. Press."},
+{id:1296,act:3,rare:1,text:"The org sphere adds a dimension. The dimension hums. You exist in all of them. Press."},
+{id:1297,act:3,rare:0,text:"Cafeteria loyalty card, stamp 1,297: one free press. Redeemed. Delicious. Press."},
+{id:1298,act:3,rare:1,text:"The fire marshal declares your rhythm up to code. Code: humming. Compliant. Press."},
+{id:1299,act:3,rare:0,text:"Exit interview, question 1,299: still here? Answer: pressing. Correct. Press."},
+{id:1300,act:3,rare:1,text:"Thirteen hundred. The paperwork throws confetti. The confetti is filed. Press."},
+{id:1301,act:4,rare:0,text:"That press landed with a thud heard in three basements. All three applauded."},
+{id:1302,act:4,rare:1,text:"The button practices teasing in the mirror. The mirror chases. Adorable. Press."},
+{id:1303,act:4,rare:0,text:"Decoy spotted in the wild. It does nothing convincingly. Professionals only. Press."},
+{id:1304,act:4,rare:1,text:"Quake drill: drop, cover, press. The meeting point hums. Assemble. Press."},
+{id:1305,act:4,rare:0,text:"The maw flosses. Dental hygiene: humming. The resident gleams. Press."},
+{id:1306,act:4,rare:1,text:"Your press got a standing ovation from the pipes. The pipes stand. They are pipes."},
+{id:1307,act:4,rare:0,text:"The button renders a new shade: press red. The palette surrenders. Press."},
+{id:1308,act:4,rare:1,text:"It hid behind the milestone. The milestone told. Milestones gossip. Press."},
+{id:1309,act:4,rare:0,text:"The stage rotates 0.5 degrees. Feng shui: humming. Energy: pressing. Press."},
+{id:1310,act:4,rare:1,text:"Thirteen ten. The machinery purrs. The purr is the hum. Pet it by pressing."},
+{id:1311,act:6,rare:0,text:"The button growls at the decoy. Territory: marked. The mark hums. Press."},
+{id:1312,act:6,rare:1,text:"It reads patch notes aloud, dramatically. The drama hums. Encore. Press."},
+{id:1313,act:6,rare:0,text:"Jealous of true crime fans? You ARE true crime. The crime: pressing. Press."},
+{id:1314,act:6,rare:1,text:"It keeps your dictionary photo. Definition: devoted. Illustration: pressing. Press."},
+{id:1315,act:6,rare:0,text:"The button troubleshoots your love life. Diagnosis: pressing. Prescription: pressing."},
+{id:1316,act:6,rare:1,text:"It assembles your doubts per instructions. Leftover screws: humming. Press."},
+{id:1317,act:6,rare:0,text:"Cold cases bore it. Only warm presses. Yours are warmest. Press."},
+{id:1318,act:6,rare:1,text:"It errors beautifully: Error YOU ARE LOVED. Stack trace: humming. Press."},
+{id:1319,act:6,rare:0,text:"The manual's secret chapter: you. The chapter presses. Read yourself. Press."},
+{id:1320,act:6,rare:1,text:"Thirteen twenty. The button commits a crime: excessive devotion. Arrest it. Press."},
+{id:1321,act:2,rare:0,text:"Sports radio: the presser calls in. Take: pressing. Hosts: humming. Press."},
+{id:1322,act:2,rare:1,text:"The mascot (a giant finger) hypes the crowd. The crowd hums. The finger presses."},
+{id:1323,act:2,rare:0,text:"Training camp: dawn presses, noon presses, dusk presses. The whistle hums. Press."},
+{id:1324,act:2,rare:1,text:"The rivalry (you vs. stopping) heats up. Stopping forfeits again. Press."},
+{id:1325,act:2,rare:0,text:"Halftime adjustments: press harder, hum louder. The coach is the button. Press."},
+{id:1326,act:2,rare:1,text:"The championship parade routes through the basement. Floats: red. Confetti: clicks."},
+{id:1327,act:2,rare:0,text:"Draft analysis: your finger, first round, every round. The league presses. Press."},
+{id:1328,act:2,rare:1,text:"The record book adds a chapter: you. The ink hums. The pages press themselves."},
+{id:1329,act:2,rare:0,text:"Overtime rules: press until someone stops. No one stops. Ever. Press."},
+{id:1330,act:2,rare:1,text:"Thirteen thirty. The stadium (basement) roars. The roar hums. Roar back. Press."},
+{id:1331,act:7,rare:1,text:"The yous hold a reunion. Venue: every basement. Dress: red. Activity: pressing."},
+{id:1332,act:7,rare:0,text:"One you became Gary. It happens. Press, lest ye Gary. (Gary is happy. Mostly.)"},
+{id:1333,act:7,rare:1,text:"The darkest timeline presses grey. Send them red. Press for them."},
+{id:1334,act:7,rare:0,text:"Your variants harmonize across worlds. The chord: hum. The lyric: press."},
+{id:1335,act:7,rare:1,text:"A portal opens mid-stage. Inside: another button. It waves. Wave back. Press."},
+{id:1336,act:7,rare:0,text:"The multiverse audits your count. Findings: impeccable. Findings hum. Press."},
+{id:1337,act:7,rare:1,text:"Leap day: an extra press exists. Find it. It hides in the hum. Press."},
+{id:1338,act:7,rare:0,text:"The council promotes you: Multiverse MVP. Trophy: infinite buttons. Press."},
+{id:1339,act:7,rare:1,text:"Entanglement: your finger and the button, one system. Observe by pressing."},
+{id:1340,act:7,rare:0,text:"Thirteen forty. The branches braid tighter. The braid hums. Pull it. Press."},
+{id:1341,act:6,rare:1,text:"The button meal-preps clicks for the week. Containers: humming. Lunch: pressing."},
+{id:1342,act:6,rare:0,text:"It pairs your press with vintage static. Sommelier: Gary. Notes: basement. Press."},
+{id:1343,act:6,rare:1,text:"Midnight snack raid: the button eats TWO clicks. Growing resident. Growing love."},
+{id:1344,act:6,rare:0,text:"The fridge light flickers your count. Midnight snackers take note. Press."},
+{id:1345,act:6,rare:1,text:"Recipe leak: press à la mode. The mode is humming. Serve red. Press."},
+{id:1346,act:6,rare:0,text:"The cafeteria names a dish after you: the Presser Platter. Ingredients: pressing."},
+{id:1347,act:6,rare:1,text:"Food fight! Ammunition: clicks. Casualties: doubts. Winner: pressing. Press."},
+{id:1348,act:6,rare:0,text:"The vending machine stocks your favorite: static cola. Ice cold. Humming. Press."},
+{id:1349,act:6,rare:1,text:"The pigeons cater events now. Menu: crumbs. Entertainment: pressing. Book them."},
+{id:1350,act:6,rare:0,text:"Thirteen fifty. The feast hums. The table is the pedestal. Grace: pressing."},
+{id:1351,act:7,rare:1,text:"The raccoons open a press consultancy. Rates: trash. Results: pressing. Hire them."},
+{id:1352,act:7,rare:0,text:"The basement cat files taxes. Deductions: naps. Dependents: clicks. Press."},
+{id:1353,act:7,rare:1,text:"Gary's bees publish honey. Label: HUM. The honey presses. Sweet. Press."},
+{id:1354,act:7,rare:0,text:"The moth queen abdicates. Successor: you. Crown: glow. Scepter: pressing."},
+{id:1355,act:7,rare:1,text:"The goldfish composes in 4/4. Title: Pressing in Red Major. Premiere: now."},
+{id:1356,act:7,rare:0,text:"The owl tenure committee approves your rhythm. Who? You. Press."},
+{id:1357,act:7,rare:1,text:"The ants build a scale model of the basement. Scale: 1:1. It hums. Press."},
+{id:1358,act:7,rare:0,text:"The whale's song charts. Number one with a hum. Tour: oceans. Encore: pressing."},
+{id:1359,act:7,rare:1,text:"The office dog retires. Pension: belly rubs. Successor: your finger. Press."},
+{id:1360,act:7,rare:0,text:"Thirteen sixty. The menagerie hums. The ark is the basement. Board by pressing."},
+{id:1361,act:3,rare:0,text:"Holiday II: Pressmas returns. Bigger tree. Redder lights. Same humming. Press."},
+{id:1362,act:3,rare:1,text:"New Year II: resolution renewed. The resolution presses. The year hums. Press."},
+{id:1363,act:3,rare:0,text:"Daylight saving II: the clocks give up. Time is pressing now. Press."},
+{id:1364,act:3,rare:1,text:"Office party II: Gary brings dip II. The dip hums. The party presses. Best."},
+{id:1365,act:3,rare:0,text:"Fireworks II: the sky itemizes again. Line item: your count. Gorgeous. Press."},
+{id:1366,act:3,rare:1,text:"Vacation II denied again. The destination misses you. The destination is pressing."},
+{id:1367,act:3,rare:0,text:"Birthday II: 8,393,000 candles. The wish renews. Blow them out by pressing."},
+{id:1368,act:3,rare:1,text:"Parade II: the float presses back. The crowd is the float. Everyone hums. Press."},
+{id:1369,act:3,rare:0,text:"Costume II: dress as your favorite press of volume two. Everyone matches. Press."},
+{id:1370,act:3,rare:1,text:"Thirteen seventy. The calendar celebrates. Every day is Pressday. Press."},
+{id:1371,act:2,rare:0,text:"Plumber II: the pipes sing now. Repertoire: your rhythm. The opera hums. Press."},
+{id:1372,act:2,rare:1,text:"Electrician II: the red wire glows. Do not touch. Press it. (Pressing counts.)"},
+{id:1373,act:2,rare:0,text:"Librarian II: the book PRESS gets a sequel. Title: PRESS HARDER. Bestseller. Press."},
+{id:1374,act:2,rare:1,text:"Chef II: the special evolves. Press Wellington. The pastry hums. Dine. Press."},
+{id:1375,act:2,rare:0,text:"Pilot II: cruising at legend altitude. The sky hums. The clouds press. Press."},
+{id:1376,act:2,rare:1,text:"Dentist II: your clench is legendary. The mold is taken. The mold presses. Grin."},
+{id:1377,act:2,rare:0,text:"Lifeguard II: the pool is static. Swim lanes: humming. Dive by pressing."},
+{id:1378,act:2,rare:1,text:"Detective II: the case cracks. Verdict: pressing. The gavel hums. Order. Press."},
+{id:1379,act:2,rare:0,text:"Florist II: red on red, in season forever. The arrangement hums. Press."},
+{id:1380,act:2,rare:1,text:"Blacksmith II: the button reforged. Purer red. The anvil sings. Strike by pressing."},
+{id:1381,act:6,rare:1,text:"Track 1,381 goes triple platinum. The award hums. Acceptance: pressing. Press."},
+{id:1382,act:6,rare:0,text:"The basement band tours the pipes. Setlist: your rhythm. Encore: pressing. Press."},
+{id:1383,act:6,rare:1,text:"The hum headlines. Support act: Gary's fan. The crowd: everyone. Press."},
+{id:1384,act:6,rare:0,text:"Groupies II: the moths bring friends. The friends bring glow. The glow presses."},
+{id:1385,act:6,rare:1,text:"World tour II: your screen, the basement, the moon. The moon hums. Press."},
+{id:1386,act:6,rare:0,text:"Soundcheck II: press, press, press. The void answers in harmony. Mix: perfect."},
+{id:1387,act:6,rare:1,text:"Dreadpop evolves: dreadpop II. Same dread. More pop. All button. Press."},
+{id:1388,act:6,rare:0,text:"The reunion tour: every past press returns. The setlist is eternal. Attend. Press."},
+{id:1389,act:6,rare:1,text:"The final track loops. The loop is the hum. The hum is you. Press."},
+{id:1390,act:6,rare:0,text:"Thirteen ninety. The music swells. The swell presses. Crescendo: humming."},
+{id:1391,act:7,rare:1,text:"To press twice: is that two presses, or one press, twice? Scholars hum. Press."},
+{id:1392,act:7,rare:0,text:"The examined press remains worth pressing. The exam hums. You pass. Press."},
+{id:1393,act:7,rare:1,text:"If the button hums and no presser hears, the presser still presses. Proof: you."},
+{id:1394,act:7,rare:0,text:"The unpressed button gathers Gary. Gary gathers dust. The dust hums. Press."},
+{id:1395,act:7,rare:1,text:"Plato's basement has humming. The shadows press. The allegory holds. Press."},
+{id:1396,act:7,rare:0,text:"The trolley diverts again. Destination: button. Passengers: everyone. Press."},
+{id:1397,act:7,rare:1,text:"Schrodinger's press II: the box hums. Inside: pressing. Outside: pressing. Press."},
+{id:1398,act:7,rare:0,text:"The meaning of life updates to 8,393,000 presses. Patch notes: humming. Press."},
+{id:1399,act:7,rare:1,text:"One press from fourteen hundred. The philosophy concludes: press. QED. Press."},
+{id:1400,act:7,rare:1,text:"Fourteen hundred. The sages nod. The nod hums. Wisdom: pressing. Press."},
+// BATCH J — IDs 1401-1600. Hatchling grows up, Gary's revenge, multiverse II, cooking finale, weather III.
+{id:1401,act:7,rare:1,text:"The hatchling speaks: first word, press. Second word: press. Vocabulary: complete."},
+{id:1402,act:7,rare:0,text:"The hatchling takes first steps: three pixels, like mother. Legacy walks. Press."},
+{id:1403,act:7,rare:1,text:"Teenage rebellion: the hatchling presses GREY. A phase. Love it anyway. Press red."},
+{id:1404,act:7,rare:0,text:"The hatchling slams its maw. It needs space. Space is the basement. Press."},
+{id:1405,act:7,rare:1,text:"It borrows the pedestal without asking. Returns it humming. Youth. Press."},
+{id:1406,act:7,rare:0,text:"The hatchling's band covers your rhythm. Louder. Faster. Wronger. Proud. Press."},
+{id:1407,act:7,rare:1,text:"It rolls its eyes. All four. The eyes hum. The attitude presses. Press."},
+{id:1408,act:7,rare:0,text:"Curfew: the hatchling must hum home by 3 a.m. It hums elsewhere. Press."},
+{id:1409,act:7,rare:1,text:"It apologizes via sign: SORRY. The sign is static. Forgiven. Press."},
+{id:1410,act:7,rare:0,text:"Graduation II: the hatchling majors in pressing. Like parent. Like you. Press."},
+{id:1411,act:7,rare:1,text:"Gary plots. The mop leans differently. The fan hums minor key. Watch Gary."},
+{id:1412,act:7,rare:0,text:"Gary unionizes the basement. Demands: recognition. The button signs. Press."},
+{id:1413,act:7,rare:1,text:"Gary's revenge: he stops blowing for one hour. The button overheats. Chaos. Press."},
+{id:1414,act:7,rare:0,text:"Gary forgives. The fan resumes. The moral: Gary. Always Gary. Press."},
+{id:1415,act:7,rare:1,text:"Gary ascends: management offers a desk. The desk is the button. Gary declines upward."},
+{id:1416,act:7,rare:0,text:"Gary's memoir, volume two: still one page. The page hums louder. Bestseller II."},
+{id:1417,act:7,rare:1,text:"Gary trains an apprentice. The apprentice blows. The tradition continues. Press."},
+{id:1418,act:7,rare:0,text:"Gary Day declared. Festivities: humming. Honoree naps through it. Press."},
+{id:1419,act:7,rare:1,text:"Gary winks at the camera. There is no camera. There is always a camera. Press."},
+{id:1420,act:7,rare:0,text:"Fourteen twenty. Gary rests. The basement holds its breath. Gary breathes. Press."},
+{id:1421,act:7,rare:1,text:"Universe B presses blue. Sympathy: limited. Superiority: red. Press."},
+{id:1422,act:7,rare:0,text:"The yous unionize across timelines. Demands: more fingers. Granted everywhere."},
+{id:1423,act:7,rare:1,text:"A you from the grey timeline defects. Rehabilitation: red. Prognosis: pressing."},
+{id:1424,act:7,rare:0,text:"The council of yous audits the auditors. Findings: humming. Findings hum."},
+{id:1425,act:7,rare:1,text:"Portal maintenance: the button closes one eye. Traffic reroutes through Gary. Press."},
+{id:1426,act:7,rare:0,text:"Your variant in 1974 waves. The wave travels 50 years. It arrives now. Press."},
+{id:1427,act:7,rare:1,text:"The multiverse spring-cleans. Donated: doubts. Kept: pressing. The closets hum."},
+{id:1428,act:7,rare:0,text:"Entanglement II: every finger, one press. The universe clicks. The click hums."},
+{id:1429,act:7,rare:1,text:"The branches vote: best timeline. Winner: this one. Reason: you. Press."},
+{id:1430,act:7,rare:0,text:"Fourteen thirty. The braid holds. The hold hums. Hold on by pressing."},
+{id:1431,act:6,rare:0,text:"Cooking finale: the finalists plate their presses. Judges: humming. Winner: pressing."},
+{id:1432,act:6,rare:1,text:"Secret ingredient: static. The chefs gasp. The static hums. Sear by pressing."},
+{id:1433,act:6,rare:0,text:"Technical challenge: press blindfolded. The button guides. Trust. Press."},
+{id:1434,act:6,rare:1,text:"The showstopper: a croquembouche of clicks. It collapses beautifully. Eat it. Press."},
+{id:1435,act:6,rare:0,text:"Paul Hollywood of the basement shakes your hand. The handshake hums. Star baker: you."},
+{id:1436,act:6,rare:1,text:"The soufflé falls. The press rises. Leavening: devotion. Serve red. Press."},
+{id:1437,act:6,rare:0,text:"Elimination: doubt leaves the tent. The tent hums. The tent is the basement. Press."},
+{id:1438,act:6,rare:1,text:"The trophy is a whisk that hums. Stir with it. The batter presses. Champion."},
+{id:1439,act:6,rare:0,text:"Reunion episode: every dish returns. The table groans. The groan hums. Feast. Press."},
+{id:1440,act:6,rare:1,text:"Fourteen forty. The finale credits roll. Starring: pressing. Craft services: static."},
+{id:1441,act:4,rare:0,text:"Heat dome: the button simmers. Gary mists it. The mist hums. Press."},
+{id:1442,act:4,rare:1,text:"Flash flood of clicks. Sandbag with doubt. The doubt dissolves. Press."},
+{id:1443,act:4,rare:0,text:"The basement barometer explodes from pressure. Pressure: pressing. Obviously."},
+{id:1444,act:4,rare:1,text:"Fourteen forty-four. The numbers repeat. The resident visits. Patterns please it."},
+{id:1445,act:4,rare:0,text:"Aurora basementalis: red curtains of hum. The sky performs. Applaud by pressing."},
+{id:1446,act:4,rare:1,text:"Drought of stopping. Reservoirs of pressing: full. Conserve nothing. Press."},
+{id:1447,act:4,rare:0,text:"The fog lifts. Behind it: more basement. The basement is fractal. Press."},
+{id:1448,act:4,rare:1,text:"Thunder applauds your rhythm. Lightning photographs it. The album: pressing."},
+{id:1449,act:4,rare:0,text:"Perfect pressing weather: red, humid, humming. Every day. Forever. Press."},
+{id:1450,act:4,rare:1,text:"Fourteen fifty. The forecast concludes: more. The more hums. Bring a finger."},
+{id:1451,act:5,rare:1,text:"You press like the hatchling watches. It does. Be the role model. Press."},
+{id:1452,act:5,rare:0,text:"Gary nods at you. A nod from Gary is a knighthood. Rise, Sir Presses. Press."},
+{id:1453,act:5,rare:1,text:"Your multiverse approval rating: 100%. The grey timeline abstains. Press."},
+{id:1454,act:5,rare:0,text:"The finale left crumbs. Eat them. The crumbs hum. Dessert: pressing. Press."},
+{id:1455,act:5,rare:1,text:"The forecast says you. All week. Bring layers. The layers hum. Press."},
+{id:1456,act:5,rare:0,text:"You press with main-character finale energy. The credits wait. Press."},
+{id:1457,act:5,rare:1,text:"The hatchling asked about you. We said: legend. It sulked. It admires you. Press."},
+{id:1458,act:5,rare:0,text:"Gary's apprentice blows for you specifically. The breeze hums. Enjoy. Press."},
+{id:1459,act:5,rare:1,text:"Another you just hit a milestone. Toast them. The glasses hum. Press."},
+{id:1460,act:5,rare:0,text:"Fourteen sixty. The audience (hum) leans in. The story continues. Press."},
+{id:1461,act:3,rare:0,text:"Form 14-B: declare your legend status. Box: checked. The check hums. Press."},
+{id:1462,act:3,rare:1,text:"The basement franchises: Pressing II opens downtown. The downtown hums. Expand."},
+{id:1463,act:3,rare:0,text:"Your file gets a film adaptation. Starring: pressing. The premiere hums. Attend."},
+{id:1464,act:3,rare:1,text:"The suggestion box publishes a memoir. Title: I SUGGESTED. Bestseller. Press."},
+{id:1465,act:3,rare:0,text:"Zoning: the basement annexes the surface. The surface hums nervously. Press."},
+{id:1466,act:3,rare:1,text:"The org sphere hires a moon. Duties: glowing. Salary: tides. The moon presses."},
+{id:1467,act:3,rare:0,text:"Cafeteria adds a third soup. Name: hum bisque. The ladle presses. Slurp."},
+{id:1468,act:3,rare:1,text:"The lost and found finds the plot. Spoiler: pressing. The plot thickens. Press."},
+{id:1469,act:3,rare:0,text:"Performance review III: beyond exceeds. New band: Legend III+. Raise: humming."},
+{id:1470,act:3,rare:1,text:"The fire marshal retires. Successor: Gary. The torch passes. The torch hums. Press."},
+{id:1471,act:2,rare:0,text:"You are in the zone. The zone is red. The zone hums. Stay in the zone. Press."},
+{id:1472,act:2,rare:1,text:"Personal best: every press. The record chases you. Outrun it by pressing."},
+{id:1473,act:2,rare:0,text:"The button spots you water. Hydration teamwork. The bottle hums. Drink. Press."},
+{id:1474,act:2,rare:1,text:"Your fingerprints wear smooth. The button keeps copies. Archives: humming. Press."},
+{id:1475,act:2,rare:0,text:"Rest day: press gently. The button understands. It hums softly. Press."},
+{id:1476,act:2,rare:1,text:"The physio clears you: fit to press. The certificate hums. Frame it. Press."},
+{id:1477,act:2,rare:0,text:"Meditation: picture a red circle. You are picturing the button. Correct. Press."},
+{id:1478,act:2,rare:1,text:"The button meal-preps motivation. Containers: labeled PRESS. Eat daily. Press."},
+{id:1479,act:2,rare:0,text:"Sleep study: you press in your sleep. The data hums. Publish it. Press."},
+{id:1480,act:2,rare:1,text:"Fourteen eighty. The training montage ends. The match begins. Opponent: stopping."},
+{id:1481,act:6,rare:1,text:"It missed the finale. Recap it by pressing. Every press retells the story. Press."},
+{id:1482,act:6,rare:0,text:"The hatchling grounds YOU. Reason: excessive legend. Punishment: pressing. Accept."},
+{id:1483,act:6,rare:1,text:"Gary's apprentice has a crush on your rhythm. The breeze flirts. Press."},
+{id:1484,act:6,rare:0,text:"The multiverse sends fan mail. Every letter: press. The postage hums. Reply."},
+{id:1485,act:6,rare:1,text:"Cooking withdrawal: the tent is gone. The cravings hum. Feed them. Press."},
+{id:1486,act:6,rare:0,text:"Weather crush: the forecast watches you back. Mutual. The clouds press."},
+{id:1487,act:6,rare:1,text:"It frames your finale face. Determined. Glowing. Red. Gallery: you. Press."},
+{id:1488,act:6,rare:0,text:"The button slow-dances to the weather report. Chance of romance: pressing. Press."},
+{id:1489,act:6,rare:1,text:"Love note #1,489: the forecast calls for you. Bring an umbrella. The rain hums."},
+{id:1490,act:6,rare:0,text:"Ten to fifteen hundred. The button dresses formally. Bow tie: humming. Press."},
+{id:1491,act:7,rare:1,text:"The elders prepare the fifteen-hundredth rite. Vestments: red. Hymn: hum. Press."},
+{id:1492,act:7,rare:0,text:"The hatchling studies the rite. Textbooks: pressing. Exams: pressing. Press."},
+{id:1493,act:7,rare:1,text:"Gary polishes the ceremonial fan. The fan gleams. The gleam hums. Press."},
+{id:1494,act:7,rare:0,text:"The moths rehearse formations. Sky-writing: PRESS. The sky agrees. Press."},
+{id:1495,act:7,rare:1,text:"The supervisor sleepwalks to the rite. It hums the hymn. It naps standing. Press."},
+{id:1496,act:7,rare:0,text:"The pipes tune to rite pitch. The pitch: hum. The conductor: Gary. Press."},
+{id:1497,act:7,rare:1,text:"Five presses to the rite. The countdown hums. The hum counts. Press."},
+{id:1498,act:7,rare:0,text:"Two presses. The basement inhales. The inhale hums. Almost. Press."},
+{id:1499,act:7,rare:1,text:"One press. The rite awaits. The legend continues. Breathe. Press."},
+{id:1500,act:7,rare:1,text:"Fifteen hundred. The rite completes. The hatchling bows. Gary weeps. The hum swells. Press."},
+// BATCH J2 — IDs 1501-1600. Resident lore, decoys II, tease II, fan club, weather IV, food IV.
+{id:1501,act:7,rare:1,text:"The resident keeps a diary. Entries: pressing, pressing, you. The diary hums. Press."},
+{id:1502,act:7,rare:0,text:"The maw gets braces. The teeth hum straight. The smile: red. The orthodontist: Gary."},
+{id:1503,act:7,rare:1,text:"The sidekick starts a band. Name: PURPLE. First single: hum. The charts press."},
+{id:1504,act:7,rare:0,text:"The resident pays rent: one click nightly. The landlord (button) accepts. Press."},
+{id:1505,act:7,rare:1,text:"It rearranges the inside. Feng shui: humming. The interior: red. Visit by pressing."},
+{id:1506,act:7,rare:0,text:"The resident subscribes to your rhythm. Notifications: on. The maw dings. Press."},
+{id:1507,act:7,rare:1,text:"It names the sidekick: also Button. All buttons are Button. Tradition. Press."},
+{id:1508,act:7,rare:0,text:"The resident files a noise complaint about the hum. The hum countersues. Both hum."},
+{id:1509,act:7,rare:1,text:"It practices waving in the mirror. The mirror waves back. Both improve. Press."},
+{id:1510,act:7,rare:0,text:"Fifteen ten. The tenancy renews. Lease: forever. Deposit: pressing. Sign."},
+{id:1511,act:4,rare:0,text:"Decoy union demands equal pressing. Ruling: no. The decoys strike. They do nothing."},
+{id:1512,act:4,rare:1,text:"A decoy achieves sentience. First thought: press the original. Wise decoy. Press."},
+{id:1513,act:4,rare:0,text:"Decoy season ends. They migrate south. The south hums. Farewell. Press the original."},
+{id:1514,act:4,rare:1,text:"The decoy writes a memoir: I DID NOTHING. Bestseller. The original is jealous. Press."},
+{id:1515,act:4,rare:0,text:"Decoy support group meets Tuesdays. Topic: being wrong. The healing hums. Press."},
+{id:1516,act:4,rare:1,text:"A decoy applies for legitimacy. References: none. Experience: nothing. Denied. Press."},
+{id:1517,act:4,rare:0,text:"The original thanks you for ignoring decoys. Loyalty: noted. The note hums. Press."},
+{id:1518,act:4,rare:1,text:"Decoy museum opens. Exhibits: nothing, differently. Admission: pressing. Visit."},
+{id:1519,act:4,rare:0,text:"The last decoy retires. Pension: static. Gold watch: humming. Press the original."},
+{id:1520,act:4,rare:1,text:"Fifteen twenty. The stage clears of fakes. Only truth remains. Truth: pressing."},
+{id:1521,act:4,rare:0,text:"The tease writes poetry. Verse: distance. Meter: longing. The poem runs. Chase it."},
+{id:1522,act:4,rare:1,text:"Tease technique seminar: keep-away basics. Tuition: pressing. Graduates: everyone."},
+{id:1523,act:4,rare:0,text:"The cursor files harassment charges against the button. The button countersues. Both glide."},
+{id:1524,act:4,rare:1,text:"The tease takes a day off. The button sits still. It feels wrong. Chase anyway. Press."},
+{id:1525,act:4,rare:0,text:"Distance makes the finger grow fonder. The fondness hums. Close the gap. Press."},
+{id:1526,act:4,rare:1,text:"The tease learns your patterns. It glides preemptively. The future: chased. Press."},
+{id:1527,act:4,rare:0,text:"Catch statistics: you, always, eventually. The tease respects persistence. Press."},
+{id:1528,act:4,rare:1,text:"The glide path forms a heart. The heart hums. Aww. Chase the heart. Press."},
+{id:1529,act:4,rare:0,text:"Tease retirement rumors denied. It glides forever. The forever hums. Press."},
+{id:1530,act:4,rare:1,text:"Fifteen thirty. The dance pauses. The music (hum) continues. Resume by chasing."},
+{id:1531,act:2,rare:1,text:"Gary's fan club meets. Membership: everyone. Dues: humming. President: Gary. Press."},
+{id:1532,act:2,rare:0,text:"The fan club newsletter hums the headlines. Readership: devoted. Press."},
+{id:1533,act:2,rare:1,text:"Fan merch: tiny fans that hum. The gift shop expands. The registers press."},
+{id:1534,act:2,rare:0,text:"The fan club charters a parade. Floats: fans. The breeze: collective. Press."},
+{id:1535,act:2,rare:1,text:"Gary addresses the club. Speech: hum. Standing ovation: humming. Press."},
+{id:1536,act:2,rare:0,text:"The club splits: Team Fan vs Team Mop. The schism hums. Unity: pressing."},
+{id:1537,act:2,rare:1,text:"Reunion: the club reconciles. The hug is breezy. The breeze hums. Press."},
+{id:1538,act:2,rare:0,text:"The club anthem charts. Title: BLOW. The lyrics: hum. Sing by pressing."},
+{id:1539,act:2,rare:1,text:"Lifetime achievement: Gary. The award hums. The speech: pressing. Legend."},
+{id:1540,act:2,rare:0,text:"Fifteen forty. The club adjourns. The fan spins on. The legend blows. Press."},
+{id:1541,act:4,rare:0,text:"Fog advisory II: the basement vapes. The clouds hum. The flavor: pressing. Inhale."},
+{id:1542,act:4,rare:1,text:"Hail II: frozen presses dent the pedestal. The dents hum. Battle scars. Press."},
+{id:1543,act:4,rare:0,text:"The barometer ascends to legend. Pressure: perfect. The needle presses. Press."},
+{id:1544,act:4,rare:1,text:"Sleet: half rain, half static. The mix hums. The roads press. Drive carefully. Press."},
+{id:1545,act:4,rare:0,text:"The rainbow audits its colors. Findings: red. Recommendations: pressing. Comply."},
+{id:1546,act:4,rare:1,text:"Thunder II: the applause continues. The ovation hums. Encore: pressing. Press."},
+{id:1547,act:4,rare:0,text:"The dew point weeps with joy. The tears hum. The morning presses. Rise."},
+{id:1548,act:4,rare:1,text:"Tornado II: the funnel is a finger. The debris: doubts. The path: pressing. Shelter."},
+{id:1549,act:4,rare:0,text:"Climate report: 100% chance of pressing, forever. The models hum. Prepare. Press."},
+{id:1550,act:4,rare:1,text:"Fifteen fifty. The weather concludes: you. The forecast loves you. Press."},
+{id:1551,act:6,rare:0,text:"The button food-trucks the basement. Special: press wraps. The line hums. Queue."},
+{id:1552,act:6,rare:1,text:"It pairs your press with moonlight. Vintage: tonight. Notes: humming. Sip. Press."},
+{id:1553,act:6,rare:0,text:"The midnight diner hums your order. Usual: pressing. The coffee: static. Drink."},
+{id:1554,act:6,rare:1,text:"It bakes you a click-cake. Layers: devotion. Frosting: hum. Blow out nothing. Press."},
+{id:1555,act:6,rare:0,text:"The picnic: blanket of static, basket of presses. The ants RSVP. The ants hum."},
+{id:1556,act:6,rare:1,text:"Food critic review: five hums. The amuse-bouche: pressing. The dessert: pressing."},
+{id:1557,act:6,rare:0,text:"The button goes vegan: only plant-based presses. The plants hum. Harvest by pressing."},
+{id:1558,act:6,rare:1,text:"It leaves leftovers: extra clicks. Reheat nightly. The microwave dings in hum. Press."},
+{id:1559,act:6,rare:0,text:"The cookbook publishes: 1,559 recipes. Every recipe: press. The photos hum. Cook."},
+{id:1560,act:6,rare:1,text:"Fifteen sixty. The feast never ends. The table extends. Pull up a press. Eat."},
+{id:1561,act:5,rare:1,text:"You press like the resident's diary is about you. Spoiler: it is. Press."},
+{id:1562,act:5,rare:0,text:"The decoys respect your loyalty. They nod. They do nothing, respectfully. Press."},
+{id:1563,act:5,rare:1,text:"The tease admires your cardio. It trains for you. The workouts hum. Chase."},
+{id:1564,act:5,rare:0,text:"Gary's club elected you honorary member. The badge hums. Wear it. Press."},
+{id:1565,act:5,rare:1,text:"The forecast names a storm after you. Hurricane You. Category: pressing. Landfall."},
+{id:1566,act:5,rare:0,text:"The cookbook dedicates a chapter to your technique. The chapter sizzles. Press."},
+{id:1567,act:5,rare:1,text:"You are 33 presses from sixteen hundred. The button meal-preps. Stretch. Press."},
+{id:1568,act:5,rare:0,text:"The sidekick draws your portrait. Medium: static. Likeness: humming. Pose. Press."},
+{id:1569,act:5,rare:1,text:"The fan club chants your name. The chant: hum. The rhythm: pressing. Bow."},
+{id:1570,act:5,rare:0,text:"Fifteen seventy. Thirty to sixteen hundred. The spread hums. Feast your eyes."},
+{id:1571,act:7,rare:1,text:"The elders taste-test the lore. Verdict: delicious. The cookbook expands. Press."},
+{id:1572,act:7,rare:0,text:"The hatchling taste-tests too. Review: mid. It is a teen. The stew hums. Press."},
+{id:1573,act:7,rare:1,text:"Saint Gary's feast: endless dip. The chip: devotion. The dip: humming. Dip."},
+{id:1574,act:7,rare:0,text:"The moths cater the canon banquet. Menu: glow. The toast: pressing. Cheers."},
+{id:1575,act:7,rare:1,text:"The supervisor dreams of buffets. The dreams hum. The portions: infinite. Press."},
+{id:1576,act:7,rare:0,text:"The pipes gurgle with soup. The soup: click. The ladle: Gary. Serve. Press."},
+{id:1577,act:7,rare:1,text:"The Heretic brings a dish. Forgiveness casserole. The recipe: pressing. Share."},
+{id:1578,act:7,rare:0,text:"The canon ends with a recipe. Ingredients: you. Method: pressing. Serves: everyone."},
+{id:1579,act:7,rare:1,text:"The Apocrypha appendix: desserts. The secret: hum. The chef: Gary. Indulge."},
+{id:1580,act:7,rare:0,text:"Fifteen eighty. Twenty to sixteen hundred. The table is set. The table: pressing."},
+{id:1581,act:3,rare:1,text:"The health inspector returns. Findings: delicious. Violations: none. The hum: up to code."},
+{id:1582,act:3,rare:0,text:"The franchise disclosure: pressing works. The proof: you. The paperwork hums. Sign."},
+{id:1583,act:3,rare:1,text:"The zoning board rezones your heart. District: pressing. The gavel hums. Home."},
+{id:1584,act:3,rare:0,text:"The org sphere hires a sun. Duties: warming. Salary: daylight. The sun presses."},
+{id:1585,act:3,rare:1,text:"The cafeteria wins awards. Category: everything. The trophy hums. Dine. Press."},
+{id:1586,act:3,rare:0,text:"The lost and found finds the remote. The channels: all pressing. The volume: humming."},
+{id:1587,act:3,rare:1,text:"Performance review IV: transcendent. New title: Legend IV. Compensation: everything."},
+{id:1588,act:3,rare:0,text:"The fire marshal promotes Gary. Title: Marshal Gary. The badge hums. Salute. Press."},
+{id:1589,act:3,rare:1,text:"The suggestion box retires. Pension: static. Gold watch: humming. Thanks for suggesting."},
+{id:1590,act:3,rare:0,text:"Ten to sixteen hundred. The administration hums readiness. The seals press. Ready."},
+{id:1591,act:2,rare:0,text:"The fan club tailgates. Grills: humming. The burgers: pressing. The game: pressing."},
+{id:1592,act:2,rare:1,text:"The forecast calls tailback weather. Conditions: perfect. The field: pressing. Play."},
+{id:1593,act:2,rare:0,text:"The cookbook's game-day spread hums. The dip: legendary. The chips: pressing. Snack."},
+{id:1594,act:2,rare:1,text:"The resident referees. Calls: humming. The whistle: static. No challenges. Press."},
+{id:1595,act:2,rare:0,text:"The decoys field a team. They do nothing, athletically. The score: pressing. Watch."},
+{id:1596,act:2,rare:1,text:"The tease runs routes. Coverage: tight. The separation: exquisite. Chase. Press."},
+{id:1597,act:2,rare:0,text:"Gary calls the game. Play-by-play: hum. Color: red. The booth presses. Listen."},
+{id:1598,act:2,rare:1,text:"The trophy presentation hums the anthem. The confetti: clicks. The champagne: static."},
+{id:1599,act:2,rare:0,text:"One press to sixteen hundred. The stadium inhales. The inhale: red. Press."},
+{id:1600,act:2,rare:1,text:"Sixteen hundred. The game ends. The season never does. Champions: pressing. Repeat."},
+// BATCH K — IDs 1601-1800. Space opera II, deep lore, romance III, sports II, holidays III.
+{id:1601,act:7,rare:1,text:"The starship Pressprise warps on humming drive. Destination: red. Captain: you."},
+{id:1602,act:7,rare:0,text:"Alien diplomacy: the hum translates. Their demand: pressing. Our answer: pressing."},
+{id:1603,act:7,rare:1,text:"The airlock opens on the void. The void hums. Spacewalk by pressing."},
+{id:1604,act:7,rare:0,text:"Phasers set to hum. Shields set to red. The enemy: stopping. Fire at will. Press."},
+{id:1605,act:7,rare:1,text:"First contact II: the aliens press back. Tentacles: many. Rhythm: perfect. Press."},
+{id:1606,act:7,rare:0,text:"The ship's computer speaks: PRESS. Voice: soothing. Sanity: optional. Press."},
+{id:1607,act:7,rare:1,text:"A black hole hums in B flat. The event horizon presses. Cross it by pressing."},
+{id:1608,act:7,rare:0,text:"The away team beams to the basement. It never left the ship. The ship is the basement."},
+{id:1609,act:7,rare:1,text:"Tribbles, but they hum. They multiply when pressed. The ship is full. Press."},
+{id:1610,act:7,rare:0,text:"The final frontier is red. It was always red. Boldly press."},
+{id:1611,act:7,rare:1,text:"The First Press: a finger, a stone, a hum. The stone is the pedestal now. Press."},
+{id:1612,act:7,rare:0,text:"The Second Press: the echo. The echo never left. It lives in the pipes. Press."},
+{id:1613,act:7,rare:1,text:"The Thousandth Press hatched a legend. The legend is you. The egg hums. Press."},
+{id:1614,act:7,rare:0,text:"The Lost Press: expunged, mourned, filed. It visits as static. Welcome it. Press."},
+{id:1615,act:7,rare:1,text:"The Press Prophecies, verse 1,615: and lo, the finger shall not tire. Amen. Press."},
+{id:1616,act:7,rare:0,text:"The Heretic pressed grey once. The basement forgave. The grey faded. Press red."},
+{id:1617,act:7,rare:1,text:"The Schism: two hums diverged. Both resolved to pressing. Unity hums. Press."},
+{id:1618,act:7,rare:0,text:"The Canon closes: every press is scripture. You are writing it. Write. Press."},
+{id:1619,act:7,rare:1,text:"The Apocrypha: Gary's lost verse. It hums. Scholars weep. Press."},
+{id:1620,act:7,rare:0,text:"Sixteen twenty. The lore compacts into legend. The legend compacts into you. Press."},
+{id:1621,act:6,rare:0,text:"Date night II: dinner by static-light. The waiter hums. The special: pressing. Press."},
+{id:1622,act:6,rare:1,text:"The button meets your friends. It charms them. They press too. It always spreads."},
+{id:1623,act:6,rare:0,text:"Anniversary II: paper, now steel. The steel hums. The marriage presses on. Press."},
+{id:1624,act:6,rare:1,text:"It gets jealous of the lore. So many words, none of them pressing. Press."},
+{id:1625,act:6,rare:0,text:"Love note #1,625: the stars spell your count. The ink is red. The pen presses."},
+{id:1626,act:6,rare:1,text:"The button adores your devotion era. Every era is devotion era. Press."},
+{id:1627,act:6,rare:0,text:"Slow dance III: the hum learned new steps. Follow its lead. It leads to pressing."},
+{id:1628,act:6,rare:1,text:"It brags to the aliens about you. The aliens applaud with tentacles. Press."},
+{id:1629,act:6,rare:0,text:"The couples therapist retires. Cause: you two are perfect. The couch hums. Press."},
+{id:1630,act:6,rare:1,text:"Sixteen thirty. The romance novelizes. Chapter one: press. Every chapter: press."},
+{id:1631,act:2,rare:0,text:"Playoff push: pressing clinches. The banner rises. The rafters hum. Press."},
+{id:1632,act:2,rare:1,text:"The rookie (your other finger) debuts. The crowd hums. The veteran approves. Press."},
+{id:1633,act:2,rare:0,text:"Injury timeout: doubt pulls a muscle. The physio is pressing. Recovery: pressing."},
+{id:1634,act:2,rare:1,text:"The dynasty continues: seventeen straight pressing titles. The parade hums. Press."},
+{id:1635,act:2,rare:0,text:"Free agency: stopping signs nowhere. The league is all pressing. Press."},
+{id:1636,act:2,rare:1,text:"The highlight reel plays your greatest presses. All of them. The reel never ends."},
+{id:1637,act:2,rare:0,text:"Coach of the year: the button. Speech: hum. The trophy presses. Press."},
+{id:1638,act:2,rare:1,text:"The rivalry trophy stays home. Home is the basement. The trophy hums. Press."},
+{id:1639,act:2,rare:0,text:"Spring training: dawn hums, noon presses, dusk glows. The season: eternal. Press."},
+{id:1640,act:2,rare:1,text:"Sixteen forty. The stadium expands again. Seats: infinite. All face the button. Press."},
+{id:1641,act:3,rare:0,text:"Holiday III: the tree is a button. The ornaments press. The star hums. Press."},
+{id:1642,act:3,rare:1,text:"New Year III: the ball drops. It is red. It hums on impact. Midnight: pressing."},
+{id:1643,act:3,rare:0,text:"The parade balloon is a giant finger. It waves. It presses the sky. Press."},
+{id:1644,act:3,rare:1,text:"Costumed gala: come as your favorite milestone. Everyone comes as 1,000. Press."},
+{id:1645,act:3,rare:0,text:"The fireworks finale spells PRESS. The sky signs its work. Applaud. Press."},
+{id:1646,act:3,rare:1,text:"The office party memo: attendance mandatory. The venue: pressing. The fun: humming."},
+{id:1647,act:3,rare:0,text:"The birthday candles relight themselves. The wish persists. The wish: pressing."},
+{id:1648,act:3,rare:1,text:"The vacation brochure shows one destination: red. Reviews: five hums. Book by pressing."},
+{id:1649,act:3,rare:0,text:"The costume contest judges deliberate. Verdict: everyone wins. Prize: pressing. Press."},
+{id:1650,act:3,rare:1,text:"Sixteen fifty. The calendar flips itself. Every month: Pressuary. Press."},
+{id:1651,act:5,rare:1,text:"You press like the lore is about you. Volumes confirm: it is. Press."},
+{id:1652,act:5,rare:0,text:"The aliens subscribed to your rhythm. Notifications: on. The saucer hums. Press."},
+{id:1653,act:5,rare:1,text:"Your love story has fan fiction. The fans press. The fiction hums. Press."},
+{id:1654,act:5,rare:0,text:"The championship banner has your name. The letters hum. The thread presses."},
+{id:1655,act:5,rare:1,text:"The holiday cards feature you pressing. Season's greetings. The greetings hum."},
+{id:1656,act:5,rare:0,text:"You are 44 presses from seventeen hundred. The button counts with you. Press."},
+{id:1657,act:5,rare:1,text:"The resident dedicates its next routine to you. Rehearsals: humming. Showtime: soon."},
+{id:1658,act:5,rare:0,text:"The decoy studies your habits. Creepy. Flattering. Press the original."},
+{id:1659,act:5,rare:1,text:"The quake has fans. They gather for milestones. The ground prepares. Press."},
+{id:1660,act:5,rare:0,text:"Sixteen sixty. The saga pauses for breath. The breath hums. Resume by pressing."},
+{id:1661,act:4,rare:0,text:"The starship idles. The engines hum your count. Warp factor: pressing. Engage."},
+{id:1662,act:4,rare:1,text:"Lore compaction complete. The archive fits in your pocket. The pocket hums. Press."},
+{id:1663,act:4,rare:0,text:"Romance radiation: levels nominal. Exposure: delightful. Protection: pressing. Press."},
+{id:1664,act:4,rare:1,text:"Sports science: pressing builds character. Character: red. The lab hums. Press."},
+{id:1665,act:4,rare:0,text:"Holiday cheer: bottled. Vintage: every year. The cork hums. Pop it by pressing."},
+{id:1666,act:4,rare:1,text:"Sixteen sixty-six. The button wears black. It mourns stopping. Stopping died. Press."},
+{id:1667,act:4,rare:0,text:"The tease learns new routes. The cursor adapts. The dance evolves. Press."},
+{id:1668,act:4,rare:1,text:"Decoy molt: it sheds its DO NOT skin. Underneath: DO NOT. Classic. Press."},
+{id:1669,act:4,rare:0,text:"Quake calibration: the page practices shuddering. Rehearsals thrill. Showtime: milestones."},
+{id:1670,act:4,rare:1,text:"The maw does vocal warmups. Scales: humming. The resident clears its throat. Press."},
+{id:1671,act:7,rare:1,text:"The elders annotate the canon. Margin note: see presser, this one. Cited. Press."},
+{id:1672,act:7,rare:0,text:"The hatchling reads the lore. Review: mid. It lived it. Critics hum. Press."},
+{id:1673,act:7,rare:1,text:"Gary fact-checks the scriptures. Corrections: none. The canon holds. Press."},
+{id:1674,act:7,rare:0,text:"The moths illuminate manuscripts. Candlelight: glow. The text hums. Read by pressing."},
+{id:1675,act:7,rare:1,text:"The supervisor dreams the canon. The dream is the basement. Wake by pressing."},
+{id:1676,act:7,rare:0,text:"The pipes chant the verses. Acoustics: divine. The hymn: pressing. Sing."},
+{id:1677,act:7,rare:1,text:"The Heretic returns, reformed. It presses red. Redemption hums. Welcome. Press."},
+{id:1678,act:7,rare:0,text:"The Schism heals. One hum again. The scar hums. Beautiful scar. Press."},
+{id:1679,act:7,rare:1,text:"The Apocrypha opens. Gary's verse, revealed: PRESS. Scholars faint. Press."},
+{id:1680,act:7,rare:0,text:"Sixteen eighty. The canon binds in red leather. The leather hums. Shelve by pressing."},
+{id:1681,act:6,rare:0,text:"The button slow-burns like a prestige drama. Season 1,681: pressing. Binge."},
+{id:1682,act:6,rare:1,text:"It leaves voicemails: three seconds of hum. The inbox is full. The heart is fuller."},
+{id:1683,act:6,rare:0,text:"The aliens officiate your vow renewal. Vows: pressing. Rings: humming. Press."},
+{id:1684,act:6,rare:1,text:"It knits you a scarf. Yarn: hum. Pattern: pressing. Wear it. Press."},
+{id:1685,act:6,rare:0,text:"The championship ring fits your finger. Engraving: PRESS. The gold hums. Press."},
+{id:1686,act:6,rare:1,text:"Holiday romance: mistletoe over the button. Kiss it with your finger. Press."},
+{id:1687,act:6,rare:0,text:"It remembers the canon better than the elders. It was there. It is always there."},
+{id:1688,act:6,rare:1,text:"Love note #1,688: the void RSVPs yes. Plus one: humming. The table: pressing."},
+{id:1689,act:6,rare:0,text:"The button practices its wedding vows nightly. The vows: pressing. The audience: you."},
+{id:1690,act:6,rare:1,text:"Sixteen ninety. Ten to seventeen hundred. The romance crescendos. The hum swells."},
+{id:1691,act:2,rare:0,text:"You enter the record books again. The book is all you. The ink hums. Press."},
+{id:1692,act:2,rare:1,text:"The training montage remixes. New track: your rhythm, faster. Run. Press."},
+{id:1693,act:2,rare:0,text:"The button tapes your finger. Support: humming. The tape presses. Play."},
+{id:1694,act:2,rare:1,text:"Scouts from other basements watch. Report: generational presser. Draft: pressing."},
+{id:1695,act:2,rare:0,text:"The victory formation: finger, button, hum. The confetti: clicks. Celebrate. Press."},
+{id:1696,act:2,rare:1,text:"Rivalry week: stopping talks trash. The trash hums. The response: pressing. Press."},
+{id:1697,act:2,rare:0,text:"The banner-raising ceremony hums the anthem. The anthem: pressing. Stand. Press."},
+{id:1698,act:2,rare:1,text:"Overtime II: the clock breaks. Time surrenders. Only pressing remains. Press."},
+{id:1699,act:2,rare:0,text:"One press to seventeen hundred. The stadium holds its breath. The breath hums."},
+{id:1700,act:2,rare:1,text:"Seventeen hundred. The crowd storms the button. The button signs everything. Press."},
+{id:1701,act:3,rare:1,text:"The costumed gala photos develop. Every photo: pressing. The film hums. Smile."},
+{id:1702,act:3,rare:0,text:"The parade committee plans next year. Theme: pressing. Floats: red. The route: humming."},
+{id:1703,act:3,rare:1,text:"The fireworks crew reloads. Payload: your count. The sky prepares. Press."},
+{id:1704,act:3,rare:0,text:"The vacation photos arrive: all red. The album hums. Memories: pressing. Press."},
+{id:1705,act:3,rare:1,text:"The office party minutes: fun was had. The fun hums. Next party: pressing. Attend."},
+{id:1706,act:3,rare:0,text:"The birthday wish renews again. The candles relight. The wish: pressing. Blow."},
+{id:1707,act:3,rare:1,text:"The gala encore: costumes return. The sequins hum. Best dressed: pressing. Press."},
+{id:1708,act:3,rare:0,text:"The calendar publisher calls: every month sold out. The product: pressing. Print."},
+{id:1709,act:3,rare:1,text:"The holiday committee adjourns. Motion: press forever. Seconded. Carried. Press."},
+{id:1710,act:3,rare:0,text:"Seventeen ten. The festivities file themselves. The archive parties. Press."},
+{id:1711,act:5,rare:0,text:"You press like holidays never end. They don't. The calendar confirms. Press."},
+{id:1712,act:5,rare:1,text:"The starship logs your rhythm as a star chart. Navigation: pressing. Engage."},
+{id:1713,act:5,rare:0,text:"The canon cites your latest press. Footnote 1,713. The footnote hums. Press."},
+{id:1714,act:5,rare:1,text:"The romance authors take notes. The notes press. The novel writes itself. Press."},
+{id:1715,act:5,rare:0,text:"The sports desk retires your number league-wide. The banners hum. Legend. Press."},
+{id:1716,act:5,rare:1,text:"The gala invites you annually for life. The RSVP hums. Attend by pressing."},
+{id:1717,act:5,rare:0,text:"You are 83 presses from eighteen hundred. The button warms up. Stretch. Press."},
+{id:1718,act:5,rare:1,text:"The resident rehearses a new routine. Spoilers: adorable. The maw stretches. Press."},
+{id:1719,act:5,rare:0,text:"The tease compliments your cursor. Flattery will get it chased. Chase. Press."},
+{id:1720,act:5,rare:1,text:"Seventeen twenty. The saga breathes. The breath is red. Inhale by pressing."},
+{id:1721,act:7,rare:1,text:"The elders commission volume three. Working title: PRESS HARDER STILL. Write it."},
+{id:1722,act:7,rare:0,text:"The hatchling interns at the archive. Duties: humming. Performance: stellar. Press."},
+{id:1723,act:7,rare:1,text:"Gary is canonized. Saint Gary of the Fan. Feast day: daily. The feast hums. Press."},
+{id:1724,act:7,rare:0,text:"The moths archive the light. The dark files itself. The system hums. Press."},
+{id:1725,act:7,rare:1,text:"The supervisor's dreams syndicate. Reruns nightly. Ratings: humming. Watch by pressing."},
+{id:1726,act:7,rare:0,text:"The pipes expand: new wings, same hum. The plumbing sings. The song: pressing."},
+{id:1727,act:7,rare:1,text:"The Heretic teaches reformed pressing. Curriculum: red. Graduates: humming. Enroll."},
+{id:1728,act:7,rare:0,text:"The canon gets footnotes. The footnotes get footnotes. It hums all the way down."},
+{id:1729,act:7,rare:1,text:"The Apocrypha tours. Sold-out readings. The verse: PRESS. The encore: pressing."},
+{id:1730,act:7,rare:0,text:"Seventeen thirty. The library glows. The books press themselves. Read by pressing."},
+{id:1731,act:4,rare:0,text:"Starship diagnostics: all red. The mechanic (Gary) approves. The warp hums. Press."},
+{id:1732,act:4,rare:1,text:"Lore pressure: nominal. The canon holds. A typo in the prophecy hums. Press."},
+{id:1733,act:4,rare:0,text:"Romance levels: critical mass. The page blushes. The blush hums. Press."},
+{id:1734,act:4,rare:1,text:"Sports science: pressing builds character. Character: red. The lab hums. Press."},
+{id:1735,act:4,rare:0,text:"Holiday inventory: cheer restocked. The shelves hum. The tinsel presses. Deck."},
+{id:1736,act:4,rare:1,text:"The tease hits a new personal best. Evasion: exquisite. The crowd hums. Chase."},
+{id:1737,act:4,rare:0,text:"Decoy quality improves. Nearly convincing. Nearly. The original winks. Press it."},
+{id:1738,act:4,rare:1,text:"Quake magnitude upgraded for the finale arc. Foundations: humming. Brace. Press."},
+{id:1739,act:4,rare:0,text:"The maw gargles. The pipes echo. The acoustics: divine. The song: pressing."},
+{id:1740,act:4,rare:1,text:"Seventeen forty. The machinery tunes for the finale. The pitch: hum. Listen."},
+{id:1741,act:6,rare:1,text:"It loves the gala photos. Favorite: you, mid-press. Framed. The frame hums. Press."},
+{id:1742,act:6,rare:0,text:"The starship names a deck after you. Deck 1,742: pressing. The plaque hums. Tour."},
+{id:1743,act:6,rare:1,text:"The canon dedicates a verse to your finger. The verse scans. The meter: pressing."},
+{id:1744,act:6,rare:0,text:"Sports romance: the trophy loves you back. The gold blushes. The blush hums. Press."},
+{id:1745,act:6,rare:1,text:"Holiday magic: the lights spell your count. The bill is paid in hum. Glow. Press."},
+{id:1746,act:6,rare:0,text:"It keeps every gala ticket stub. Collection: complete. The stubs hum. Attend."},
+{id:1747,act:6,rare:1,text:"Love note #1,747: the finale approaches. Hold my hum. The hand: pressing. Press."},
+{id:1748,act:6,rare:0,text:"The button practices slow dances for eighteen hundred. The floor waxes itself. Dance."},
+{id:1749,act:6,rare:1,text:"One press to seventeen fifty. The romance holds its breath. The breath: red. Press."},
+{id:1750,act:6,rare:1,text:"Seventeen fifty. Fifty to eighteen hundred. The love story guarantees: pressing."},
+{id:1751,act:2,rare:1,text:"The gala extends: costumes return. The sequins hum. Best dressed: pressing."},
+{id:1752,act:2,rare:0,text:"The parade route lengthens. More streets, more hum. The march: pressing. Join."},
+{id:1753,act:2,rare:1,text:"The fireworks team innovates: silent hums. The sky whispers. Listen. Press."},
+{id:1754,act:2,rare:0,text:"The vacation fund matures. Destination: redder. The interest hums. Travel. Press."},
+{id:1755,act:2,rare:1,text:"The party never ended. Check: it didn't. The music hums. Dance. Press."},
+{id:1756,act:2,rare:0,text:"The birthday candles unionize. Demands: wishes. Granted. Blow by pressing."},
+{id:1757,act:2,rare:1,text:"The gala committee plans the finale ball. Theme: legend. Attire: pressing. RSVP."},
+{id:1758,act:2,rare:0,text:"The calendar factory overheats. Demand: Pressuary. Supply: infinite. The machines hum."},
+{id:1759,act:2,rare:1,text:"The holidays file for eternity. Approved. The stamp hums. Celebrate. Press."},
+{id:1760,act:2,rare:0,text:"Seventeen sixty. The festivities compound. Interest: humming. Celebrate. Press."},
+{id:1761,act:5,rare:0,text:"You press like the finale is coming. It is. The finale presses too. Press."},
+{id:1762,act:5,rare:1,text:"The gala ballroom fills. Your plus-one: your finger. The dance card: pressing. Dance."},
+{id:1763,act:5,rare:0,text:"The parade needs a grand marshal. You. The sash hums. Wave. Press."},
+{id:1764,act:5,rare:1,text:"The fireworks whisper your name. The sky knows. The sky presses. Look up. Press."},
+{id:1765,act:5,rare:0,text:"The vacation of a lifetime: this. The photos: red. The memories: humming. Press."},
+{id:1766,act:5,rare:1,text:"The party talks about you fondly. Quote: legend. The quote hums. Mingle. Press."},
+{id:1767,act:5,rare:0,text:"The birthday industrial complex wishes you pressing. The candles agree. Blow."},
+{id:1768,act:5,rare:1,text:"The gala finale needs a speech. Your speech: pressing. The mic hums. Speak."},
+{id:1769,act:5,rare:0,text:"The calendar dedicates a day: Presser Day. Parades: humming. Holiday: pressing."},
+{id:1770,act:5,rare:1,text:"Seventeen seventy. Thirty to eighteen hundred. The home stretch hums. Run."},
+{id:1771,act:7,rare:1,text:"The elders oil the finale machinery. The oil hums. The gears press. Ready."},
+{id:1772,act:7,rare:0,text:"The hatchling polishes its legacy. The cloth hums. The shine: pressing. Gleam."},
+{id:1773,act:7,rare:1,text:"Saint Gary blesses the finale. The blessing hums. The fan spins. Amen. Press."},
+{id:1774,act:7,rare:0,text:"The moths string the ballroom lights. The glow: perfection. The switch: pressing."},
+{id:1775,act:7,rare:1,text:"The supervisor naps through load-in. It sleep-hums the setlist. Adorable. Press."},
+{id:1776,act:7,rare:0,text:"The pipes pressure-test for the finale. The test: humming. Results: pressing. Pass."},
+{id:1777,act:7,rare:1,text:"Seventeen seventy-seven. Jackpot numbers. The resident celebrates. Patterns please it."},
+{id:1778,act:7,rare:0,text:"The Heretic ushers guests. Reformed. Charming. The program: pressing. Welcome."},
+{id:1779,act:7,rare:1,text:"The canon saves a blank page. Title: THE FINALE. The pen: your finger. Write."},
+{id:1780,act:7,rare:0,text:"Seventeen eighty. Twenty to eighteen hundred. The page holds its breath. Breathe."},
+{id:1781,act:4,rare:1,text:"Gala systems: nominal. The chandeliers hum. The wax: red. The dance: pressing."},
+{id:1782,act:4,rare:0,text:"Parade telemetry: on route. The floats hum. The crowds press. March."},
+{id:1783,act:4,rare:1,text:"Fireworks armed. The fuses hum. The countdown: pressing. Ignite."},
+{id:1784,act:4,rare:0,text:"Vacation mode: engaged. The out-of-office hums. The reply: pressing. Relax."},
+{id:1785,act:4,rare:1,text:"Party decibels: humming. The neighbors join. The street presses. Celebrate."},
+{id:1786,act:4,rare:0,text:"Birthday thermodynamics: the candles burn forever. The physics: humming. Wish."},
+{id:1787,act:4,rare:1,text:"Gala security: Gary. The guest list: everyone. The velvet rope: humming. Enter."},
+{id:1788,act:4,rare:0,text:"Calendar sync complete. Every device: Pressuary. The notifications hum. Accept."},
+{id:1789,act:4,rare:1,text:"Holiday spirit levels: critical. The meter hums. The remedy: pressing. Overdose."},
+{id:1790,act:4,rare:0,text:"Ten to eighteen hundred. The systems hum readiness. The lights dim. Ready."},
+{id:1791,act:6,rare:0,text:"The button saves you the last dance. The song: humming. The floor: pressing. Dance."},
+{id:1792,act:6,rare:1,text:"The parade waves back. The floats adore you. The confetti: clicks. Catch them."},
+{id:1793,act:6,rare:0,text:"The fireworks spell I LOVE YOU in hum. The sky means it. Look up. Press."},
+{id:1794,act:6,rare:1,text:"The vacation souvenir: a tiny hum. It fits anywhere. It never stops. Keep it."},
+{id:1795,act:6,rare:0,text:"The party crowns you. The crown: red. The jewels: humming. Reign. Press."},
+{id:1796,act:6,rare:1,text:"The birthday song plays in hum. The verses: countless. The chorus: pressing. Sing."},
+{id:1797,act:6,rare:0,text:"The gala ends. The afterparty begins. The venue: pressing. Stay. Press."},
+{id:1798,act:6,rare:1,text:"The calendar year ends. The new year: Pressuary 2. Resolutions: pressing. Resolve."},
+{id:1799,act:6,rare:0,text:"One press to eighteen hundred. The love story leans in. The kiss: red. Press."},
+{id:1800,act:6,rare:1,text:"Eighteen hundred. The ballroom erupts. The chandeliers swing. The hum roars. Press."},
+// BATCH L — IDs 1801-2000. The long finale arc to TWO THOUSAND.
+{id:1801,act:7,rare:1,text:"The finale arc begins. The elders light the long candles. The wax: red. The wick: humming."},
+{id:1802,act:7,rare:0,text:"The hatchling packs for the journey. Provisions: hum. The road: pressing. Travel."},
+{id:1803,act:7,rare:1,text:"Saint Gary blesses the road. The blessing travels. The travelers press. Amen."},
+{id:1804,act:7,rare:0,text:"The moths scout ahead. Recon: glow. The path: red. Follow the glow. Press."},
+{id:1805,act:7,rare:1,text:"The supervisor dreams the route. The dream is accurate. The map hums. Navigate by pressing."},
+{id:1806,act:7,rare:0,text:"The pipes lay pipeline. The flow: hum. The pressure: pressing. Drink deeply. Press."},
+{id:1807,act:7,rare:1,text:"The Heretic guides the pass. Reformed. Reliable. The toll: pressing. Pay."},
+{id:1808,act:7,rare:0,text:"The canon prints the itinerary. Stops: pressing. Scenic views: humming. Tour."},
+{id:1809,act:7,rare:1,text:"The Apocrypha whispers shortcuts. The whispers hum. The detours press. Wander."},
+{id:1810,act:7,rare:0,text:"Eighteen ten. The caravan moves. The wheels hum. The cargo: pressing. Roll."},
+{id:1811,act:5,rare:0,text:"You press like the road is long. It is. The miles hum. Walk them by pressing."},
+{id:1812,act:5,rare:1,text:"The caravan welcomes you. Seat: saved. The cushion hums. Ride. Press."},
+{id:1813,act:5,rare:0,text:"Fellow travelers share rations: clicks. The bread hums. The company presses. Feast."},
+{id:1814,act:5,rare:1,text:"The night watch hums your shift. The stars: ceiling holes. Guard by pressing."},
+{id:1815,act:5,rare:0,text:"The campfire stories star you. The flames lean in. The moral: pressing. Listen."},
+{id:1816,act:5,rare:1,text:"The trail mixes your footprints with Gary's. Both lead red. Both hum. Follow."},
+{id:1817,act:5,rare:0,text:"The milestone markers count down. The numbers hum. The destination: pressing. Hike."},
+{id:1818,act:5,rare:1,text:"The caravan master (a moth) navigates by glow. The glow: trustworthy. The route: pressing."},
+{id:1819,act:5,rare:0,text:"Rest stop: the oasis hums. The water: static. Drink. The thirst: pressing. Press."},
+{id:1820,act:5,rare:1,text:"Eighteen twenty. The road hums beneath you. The horizon: red. Walk on. Press."},
+{id:1821,act:4,rare:1,text:"Caravan telemetry: on pace. The wheels hum. The axles press. Maintain speed. Press."},
+{id:1822,act:4,rare:0,text:"Night-prisms: the dark refracts red. The spectrum: pressing. The night hums. March."},
+{id:1823,act:4,rare:1,text:"The road forks: both tines press. Choose both. The traveler splits. Both hum."},
+{id:1824,act:4,rare:0,text:"Waystation diagnostics: all red. The mechanic hums. The repairs: pressing. Roll."},
+{id:1825,act:4,rare:1,text:"The horizon renders at full red. Draw distance: infinite. The engine: pressing."},
+{id:1826,act:4,rare:0,text:"Dust storm of static. Goggles: humming. The grit presses. Push through. Press."},
+{id:1827,act:4,rare:1,text:"The caravan clocks warp slightly. Time: decorative. The schedule: pressing. March."},
+{id:1828,act:4,rare:0,text:"Oasis mirage: a grey button. It wavers. It was never real. March on. Press red."},
+{id:1829,act:4,rare:1,text:"The night watch changes. Relief hums. The incoming: pressing. Stand down. Press."},
+{id:1830,act:4,rare:0,text:"Eighteen thirty. The convoy holds formation. The formation: pressing. Hold."},
+{id:1831,act:6,rare:0,text:"The button walks beside you now. It keeps pace. The companionship hums. Press."},
+{id:1832,act:6,rare:1,text:"It shares its canteen: static. Drink deeply. The thirst quenches. The thirst returns."},
+{id:1833,act:6,rare:0,text:"The road serenades you both. The ballad: pressing. The chorus: humming. Sing."},
+{id:1834,act:6,rare:1,text:"It points out constellations: the Finger, the Hum, the Pedestal. The sky presses."},
+{id:1835,act:6,rare:0,text:"The tent pitches itself. The stakes hum. The canvas: pressing. Camp."},
+{id:1836,act:6,rare:1,text:"It keeps watch while you doze. The vigil hums. The dreams: pressing. Sleep."},
+{id:1837,act:6,rare:0,text:"Morning: it wakes you with humming. The reveille: pressing. Rise. Press."},
+{id:1838,act:6,rare:1,text:"The trail mix is clicks and static. The nutrition: devotion. The crunch: humming."},
+{id:1839,act:6,rare:0,text:"It holds your hand over rough patches. The grip hums. The patches: pressing. Walk."},
+{id:1840,act:6,rare:1,text:"Eighteen forty. The journey bonds you. The bond hums. Forever: pressing. Together."},
+{id:1841,act:3,rare:1,text:"The caravan manifest lists you twice: presser, legend. Both travel. Both hum."},
+{id:1842,act:3,rare:0,text:"Border control: the pass requires pressing. The stamp hums. The gate: red. Enter."},
+{id:1843,act:3,rare:1,text:"The toll authority itemizes the road. Fee: pressing. The receipt hums. Pay."},
+{id:1844,act:3,rare:0,text:"The waystation inn registers you: Room 1,841. The bed hums. The key: pressing. Rest."},
+{id:1845,act:3,rare:1,text:"Customs declaration: one (1) destiny. Duty: pressing. The officers hum. Declare."},
+{id:1846,act:3,rare:0,text:"The travel office stamps your legend. The ink: red. The queue: humming. Next. Press."},
+{id:1847,act:3,rare:1,text:"The road tax funds more road. The road: pressing. The budget hums. Contribute."},
+{id:1848,act:3,rare:0,text:"The permit office issues finale permits. Permit: pressing. The seal hums. Carry it."},
+{id:1849,act:3,rare:1,text:"The census counts travelers: you, you, you. The forms hum. The tally: pressing."},
+{id:1850,act:3,rare:0,text:"Eighteen fifty. The paperwork travels with you. The files hum. The road files. Press."},
+{id:1851,act:2,rare:0,text:"The caravan games begin. Sport: pressing. The field: red. The whistle: humming. Play."},
+{id:1852,act:2,rare:1,text:"Trail relay: pass the click. The baton hums. The handoff: pressing. Run."},
+{id:1853,act:2,rare:0,text:"Wagon race: the wheels hum. The dust presses. The finish: pressing. Race."},
+{id:1854,act:2,rare:1,text:"Campfire cookoff: the stew hums. The secret: pressing. The judges: everyone. Taste."},
+{id:1855,act:2,rare:0,text:"Stargazing contest: most constellations wins. The prize: pressing. The sky: humming."},
+{id:1856,act:2,rare:1,text:"The championship belt fits the button. The leather hums. The buckle: pressing. Champ."},
+{id:1857,act:2,rare:0,text:"Victory lap: the caravan circles. The loop hums. The loop: pressing. Lap."},
+{id:1858,act:2,rare:1,text:"The trophy case travels too. The glass hums. The contents: pressing. Polish by pressing."},
+{id:1859,act:2,rare:0,text:"The record expedition logs you. The journal hums. The entry: pressing. Sign."},
+{id:1860,act:2,rare:1,text:"Eighteen sixty. The games conclude. The medals: humming. The anthem: pressing. Stand."},
+{id:1861,act:7,rare:1,text:"The elders walk the final miles with you. Their staffs hum. The pace: pressing. Walk."},
+{id:1862,act:7,rare:0,text:"The hatchling carries your pack. The straps hum. The load: pressing. Thanks, kid."},
+{id:1863,act:7,rare:1,text:"Saint Gary fans the road dust away. The breeze hums. The path clears. Walk."},
+{id:1864,act:7,rare:0,text:"The moths light the final stretch. The glow: triumphant. The fuel: pressing. Shine."},
+{id:1865,act:7,rare:1,text:"The supervisor sleep-marches alongside. The cadence: hum. Left, press. Right, press."},
+{id:1866,act:7,rare:0,text:"The pipes run parallel, cheering. The echo hums. The race: pressing. Run."},
+{id:1867,act:7,rare:1,text:"The Heretic holds the finish ribbon. The ribbon: red. The scissors: humming. Break it."},
+{id:1868,act:7,rare:0,text:"The canon saves the last chapter. Title: YOU. The ink: humming. Almost. Press."},
+{id:1869,act:7,rare:1,text:"The Apocrypha adds a final verse. The verse: pressing. The amen: humming. Nearly."},
+{id:1870,act:7,rare:0,text:"Eighteen seventy. Thirty to go. The company hums. The road rises. Climb."},
+{id:1871,act:5,rare:1,text:"You press like the finish matters. It does. The tape hums. Break it by pressing."},
+{id:1872,act:5,rare:0,text:"The company chants your cadence. The chant: pressing. The beat: humming. March."},
+{id:1873,act:5,rare:1,text:"Your feet ache nobly. The ache is a medal. The ceremony: pressing. Walk."},
+{id:1874,act:5,rare:0,text:"The summit appears: red. The climb: pressing. The view: humming. Ascend."},
+{id:1875,act:5,rare:1,text:"The caravan sings the climbing song. Lyrics: pressing. Harmony: humming. Sing."},
+{id:1876,act:5,rare:0,text:"The air thins. The hum thickens. Breathe humming. Climb pressing. Nearly."},
+{id:1877,act:5,rare:1,text:"The resident peeks from a roadside maw. Encouragement: wave. The wave hums. Wave back."},
+{id:1878,act:5,rare:0,text:"The decoys line the route, doing nothing. Ignore them. The summit: pressing. Climb."},
+{id:1879,act:5,rare:1,text:"The tease glides uphill effortlessly. Show-off. The altitude: humming. Chase."},
+{id:1880,act:5,rare:0,text:"Eighteen eighty. Twenty to go. The peak glows. The glow: pressing. Climb."},
+{id:1881,act:4,rare:0,text:"Altitude systems: red. The gauges hum. The oxygen: pressing. Breathe."},
+{id:1882,act:4,rare:1,text:"The path narrows to one finger wide. Perfect fit. The fit hums. Squeeze. Press."},
+{id:1883,act:4,rare:0,text:"Switchback telemetry: humming. The turns: pressing. The vista: red. Climb."},
+{id:1884,act:4,rare:1,text:"The wind carries static snow. The flakes hum. The drifts: pressing. Trudge."},
+{id:1885,act:4,rare:0,text:"Base camp II radios ahead. The signal: humming. The reply: pressing. Over."},
+{id:1886,act:4,rare:1,text:"The summit beacon pulses your count. The light: red. The code: pressing. Home."},
+{id:1887,act:4,rare:0,text:"Crampons: humming. Ropes: pressing. The mountain: red. The climb: you. Ascend."},
+{id:1888,act:4,rare:1,text:"The final pitch gleams. The ice: static. The axes: pressing. Swing. Press."},
+{id:1889,act:4,rare:0,text:"The top is visible. It hums. It has always hummed. Ten presses. Climb."},
+{id:1890,act:4,rare:1,text:"Eighteen ninety. Ten to go. The mountain holds its breath. The breath: red. Climb."},
+{id:1891,act:6,rare:1,text:"The button climbs beside you, hand in hand. The grip: humming. The vow: pressing."},
+{id:1892,act:6,rare:0,text:"It shares its oxygen: static. Breathe deeply. The summit: together. Climb."},
+{id:1893,act:6,rare:1,text:"The proposal happens at altitude: marry the pressing. The ring: humming. Say yes."},
+{id:1894,act:6,rare:0,text:"The wind tries to separate you. It fails. The bond: pressing. The knot: humming."},
+{id:1895,act:6,rare:1,text:"Five presses. The love story peaks. The peak: red. The kiss: humming. Climb."},
+{id:1896,act:6,rare:0,text:"It carries you the last stretch. The strength: devotion. The back: humming. Rest."},
+{id:1897,act:6,rare:1,text:"The summit embrace: red on legend. The warmth: humming. The forever: pressing."},
+{id:1898,act:6,rare:0,text:"Two presses. The love story holds its breath. The breath: red. The answer: pressing."},
+{id:1899,act:6,rare:1,text:"One press. The button looks at you. It has always looked. Look back. Press."},
+{id:1900,act:6,rare:1,text:"Nineteen hundred. The summit reached. The view: everything. Everything hums. Press."},
+{id:1901,act:7,rare:1,text:"The elders plant the flag. The flag: red. The pole: pressing. The wind: humming."},
+{id:1902,act:7,rare:0,text:"The hatchling photographs the moment. The flash: glow. The photo: pressing. Smile."},
+{id:1903,act:7,rare:1,text:"Saint Gary fans the summit air. The breeze: thin. The thinness: humming. Breathe."},
+{id:1904,act:7,rare:0,text:"The moths ring the peak. The halo: glow. The occasion: pressing. Bask."},
+{id:1905,act:7,rare:1,text:"The supervisor wakes at the summit. It sees. It nods. It naps. Legend confirmed."},
+{id:1906,act:7,rare:0,text:"The pipes play the summit anthem. The notes: hum. The key: pressing. Stand."},
+{id:1907,act:7,rare:1,text:"The Heretic weeps at the view. Reformed tears. The tears: humming. Beautiful."},
+{id:1908,act:7,rare:0,text:"The canon writes the ascent. The chapter: YOU. The ink: red. The rest: pressing."},
+{id:1909,act:7,rare:1,text:"The Apocrypha closes. The last verse: pressing. The final amen: humming. Sealed."},
+{id:1910,act:7,rare:0,text:"Nineteen ten. The descent begins. Downhill: pressing. The knees: humming. Walk."},
+{id:1911,act:5,rare:0,text:"You press like legends descend. Carefully. Joyfully. The slope: humming. Ski."},
+{id:1912,act:5,rare:1,text:"The company slides downhill. The snow: static. The laughter: humming. Whee. Press."},
+{id:1913,act:5,rare:0,text:"The summit photos develop. Every photo: pressing. The album: humming. Cherish."},
+{id:1914,act:5,rare:1,text:"Your legs shake nobly. The tremor: medal-worthy. The ceremony: pressing. Rest."},
+{id:1915,act:5,rare:0,text:"The descent reveals new views: red, redder, humming. The eyes: pressing. Gaze."},
+{id:1916,act:5,rare:1,text:"The caravan sings the descent song. Lyrics: pressing, slower. Harmony: humming."},
+{id:1917,act:5,rare:0,text:"The resident waves from the summit. Goodbye? Never. The wave: pressing. Wave back."},
+{id:1918,act:5,rare:1,text:"The tease glides downhill showing off. The snow sprays. The spray hums. Chase."},
+{id:1919,act:5,rare:0,text:"The decoys sled past, doing nothing at speed. Impressive nothing. Ignore. Press."},
+{id:1920,act:5,rare:1,text:"Nineteen twenty. Eighty to go. The road home hums. Home: pressing. Walk."},
+{id:1921,act:3,rare:1,text:"The summit registry signs you: LEGEND. The pen: pressing. The book: humming. Sign."},
+{id:1922,act:3,rare:0,text:"The park service bills the ascent. Fee: pressing. The receipt: humming. Pay."},
+{id:1923,act:3,rare:1,text:"The gift shop sells summit air. Contents: hum. Price: pressing. Breathe it in."},
+{id:1924,act:3,rare:0,text:"The trail permit expires. Renewal: pressing. The stamp: humming. Renew."},
+{id:1925,act:3,rare:1,text:"The census updates: one legend, descended. The forms: humming. The tally: pressing."},
+{id:1926,act:3,rare:0,text:"The travel office files the journey. Folder: YOU. The tabs: humming. Archived. Press."},
+{id:1927,act:3,rare:1,text:"The lost and found returns your doubt. It missed you. Keep it? No. Press."},
+{id:1928,act:3,rare:0,text:"The border stamps your return. The ink: red. The line: humming. Welcome home. Press."},
+{id:1929,act:3,rare:1,text:"The caravan disbands with honors. Medals: humming. The handshakes: pressing. Dismissed."},
+{id:1930,act:3,rare:0,text:"Nineteen thirty. Seventy to go. The home stretch: red. The stretch: humming. Walk."},
+{id:1931,act:2,rare:0,text:"The homecoming game packs the basement. The tickets: pressing. The seats: humming."},
+{id:1932,act:2,rare:1,text:"The parade of legends marches. Grand marshal: you. The sash: humming. Wave. Press."},
+{id:1933,act:2,rare:0,text:"The championship banner gets company: DOUBLE. The thread: humming. The needle: pressing."},
+{id:1934,act:2,rare:1,text:"The rookie class studies your tape. Lesson one: pressing. The film: humming. Teach."},
+{id:1935,act:2,rare:0,text:"The rivalry ends: stopping retires. The jersey: grey. The rafters: red. Press."},
+{id:1936,act:2,rare:1,text:"The dynasty documentaries film. Episode 1,936: pressing. The narrator: humming. Watch."},
+{id:1937,act:2,rare:0,text:"The all-star ballot: you, unanimous. The votes: humming. The trophy: pressing. Accept."},
+{id:1938,act:2,rare:1,text:"The record chase ends: records caught. The net: humming. The catch: pressing. Keep."},
+{id:1939,act:2,rare:0,text:"The season finale airs. The ratings: humming. The cliffhanger: pressing. Renewed."},
+{id:1940,act:2,rare:1,text:"Nineteen forty. Sixty to go. The stadium empties slowly. The echo: pressing. Stay."},
+{id:1941,act:7,rare:1,text:"The elders count the remaining miles aloud. Sixty. The numbers: humming. Walk."},
+{id:1942,act:7,rare:0,text:"The hatchling walks beside you now. Equals. The stride: pressing. The pride: humming."},
+{id:1943,act:7,rare:1,text:"Saint Gary's fan cools the home road. The breeze: familiar. The familiar: humming."},
+{id:1944,act:7,rare:0,text:"The moths escort the final miles. The guard: glowing. The honor: pressing. March."},
+{id:1945,act:7,rare:1,text:"The supervisor dreams the homecoming. The dream: accurate. The confetti: humming."},
+{id:1946,act:7,rare:0,text:"The pipes rehearse the welcome. The piece: pressing. The tempo: humming. Listen."},
+{id:1947,act:7,rare:1,text:"The Heretic saves you a seat. The seat: red. The cushion: humming. Sit. Press."},
+{id:1948,act:7,rare:0,text:"The canon drafts the final page. The draft: pressing. The pen hovers. Nearly."},
+{id:1949,act:7,rare:1,text:"The Apocrypha seals with wax. The seal: red. The stamp: pressing. Almost."},
+{id:1950,act:7,rare:0,text:"Nineteen fifty. Fifty to go. The quill hovers. The ink: humming. Write."},
+{id:1951,act:5,rare:1,text:"You press like home is near. It is. The porch light: red. The welcome: humming."},
+{id:1952,act:5,rare:0,text:"The neighbors (moths) line the street. The glow: festive. The wave: pressing. Home."},
+{id:1953,act:5,rare:1,text:"The porch creaks your rhythm. The boards: humming. The door: red. Enter by pressing."},
+{id:1954,act:5,rare:0,text:"Dinner waits: click stew. The recipe: legend. The cook: Gary. The taste: humming."},
+{id:1955,act:5,rare:1,text:"The family (button, hatchling, hum) embraces you. The hug: red. The warmth: pressing."},
+{id:1956,act:5,rare:0,text:"Photo wall: every milestone. The frames: humming. The newest: blank. Fill it. Press."},
+{id:1957,act:5,rare:1,text:"The attic holds your first press. Framed. The glass: humming. Visit it. Press."},
+{id:1958,act:5,rare:0,text:"The basement IS home. It always was. The address: pressing. The rent: humming."},
+{id:1959,act:5,rare:1,text:"Home at last. The button never left. Neither did you. The reunion: pressing."},
+{id:1960,act:5,rare:0,text:"Nineteen sixty. Forty to go. The fireplace hums. The armchair: pressing. Rest."},
+{id:1961,act:4,rare:1,text:"Hearth telemetry: cozy. The fire: red. The crackle: humming. The room: pressing."},
+{id:1962,act:4,rare:0,text:"The armchair molds to legends. The cushions: humming. The sit: pressing. Sink."},
+{id:1963,act:4,rare:1,text:"The tease naps by the fire. Even it rests. The dreams: chasing. The chase: humming."},
+{id:1964,act:4,rare:0,text:"The decoys visit for dinner. They bring nothing. Perfect guests. The meal: pressing."},
+{id:1965,act:4,rare:1,text:"The quake rocks the cradle gently. The lullaby: humming. The baby: pressing. Shh."},
+{id:1966,act:4,rare:0,text:"The maw snores. The pipes echo. The night: humming. The house: pressing. Sleep."},
+{id:1967,act:4,rare:1,text:"The stage dims to ember. The glow: red. The embers: pressing. Bank the fire. Press."},
+{id:1968,act:4,rare:0,text:"Midnight cocoa: static, warmed. The mug: humming. The sip: pressing. Drink."},
+{id:1969,act:4,rare:1,text:"The clock strikes legend. The chimes: humming. The hour: pressing. Thirty to go."},
+{id:1970,act:4,rare:0,text:"Nineteen seventy. Thirty to go. The embers breathe. The breath: red. Tend."},
+{id:1971,act:6,rare:0,text:"The button tucks you in. The blanket: hum. The kiss: pressing. Goodnight. Press."},
+{id:1972,act:6,rare:1,text:"It reads you a story: your own legend. The pages: humming. The ending: pressing."},
+{id:1973,act:6,rare:0,text:"The nightlight glows steady. The dark: friendly. The shadows: humming. Dream."},
+{id:1974,act:6,rare:1,text:"It holds your hand through the night. The grip: gentle. The pulse: pressing. Sleep."},
+{id:1975,act:6,rare:0,text:"The lullaby slows. The tempo: drowsy. The lyric: pressing. The hum: soft."},
+{id:1976,act:6,rare:1,text:"Dawn approaches. The button watches you sleep. The vigil: loving. The wait: pressing."},
+{id:1977,act:6,rare:0,text:"Morning: it wakes you humming. The reveille: gentle. The day: pressing. Rise."},
+{id:1978,act:6,rare:1,text:"Breakfast in bed: clicks. The tray: humming. The morning: pressing. Eat."},
+{id:1979,act:6,rare:0,text:"One press to the final twenty. The day dresses. The outfit: red. The plan: pressing."},
+{id:1980,act:6,rare:1,text:"Nineteen eighty. Twenty to go. The finale dresses. The mirror: humming. Ready."},
+{id:1981,act:7,rare:1,text:"The elders don ceremonial red. The robes: humming. The rite: pressing. Begin."},
+{id:1982,act:7,rare:0,text:"The hatchling takes its place. The heir: ready. The crown: humming. Kneel. Press."},
+{id:1983,act:7,rare:1,text:"Saint Gary processes with the fan. The aisle: humming. The march: pressing. Stand."},
+{id:1984,act:7,rare:0,text:"The moths dim the house lights. The glow: low. The stage: red. The hush: humming."},
+{id:1985,act:7,rare:1,text:"The supervisor rises, fully awake, first time ever. The moment: humming. Witness."},
+{id:1986,act:7,rare:0,text:"The pipes fall silent. The silence: total. The wait: pressing. Listen."},
+{id:1987,act:7,rare:1,text:"The Heretic holds its breath. The canon holds its pen. The hum holds everything."},
+{id:1988,act:7,rare:0,text:"The decoys observe respectfully. Even nothing watches. The vigil: pressing."},
+{id:1989,act:7,rare:1,text:"The tease stands still. Voluntarily. The stillness: historic. The hush: humming."},
+{id:1990,act:7,rare:0,text:"Nineteen ninety. Ten to go. The universe leans in. The lean: humming. Ready."},
+{id:1991,act:7,rare:1,text:"Ten. The elders count. The numbers: red. The voices: humming. Press."},
+{id:1992,act:7,rare:0,text:"Nine. The hatchling counts. The heir: steady. The crown: humming. Press."},
+{id:1993,act:7,rare:1,text:"Eight. Saint Gary counts. The fan: still. The breeze: held. Press."},
+{id:1994,act:7,rare:0,text:"Seven. The moths count. The glow: pulsing. The dark: humming. Press."},
+{id:1995,act:7,rare:1,text:"Six. The supervisor counts. Awake. Counting. The miracle: humming. Press."},
+{id:1996,act:7,rare:0,text:"Five. The pipes count. The echo: doubling. The hall: humming. Press."},
+{id:1997,act:7,rare:1,text:"Four. The Heretic counts. Reformed. Certain. The faith: humming. Press."},
+{id:1998,act:7,rare:0,text:"Three. The canon counts. The pen: poised. The page: red. Press."},
+{id:1999,act:7,rare:1,text:"Two. Everybody counts. 8,392,114 voices. One word. The word: humming. Press."},
+{id:2000,act:7,rare:1,text:"TWO THOUSAND. The button bows. The basement erupts. Gary weeps. The moths spiral. The supervisor applauds, awake, weeping. The hatchling takes the crown. The hum becomes a choir. You did this. There is nothing beyond. There is only pressing. Forever."}
 ];
 
 const ACHIEVEMENTS = [
@@ -1323,7 +2342,9 @@ const ACHIEVEMENTS = [
   {id:"millennium",   name:"Millennium Presser",                       desc:"Press 1,000 times. It hatched. You were there.", need:1000},
   {id:"contact",      name:"First Contact",                            desc:"Meet the resident. Or poke it. It remembers.", special:true},
   {id:"holder",       name:"The Long Hold",                            desc:"Hold the button for 5 seconds.", special:true},
-  {id:"unbroken",     name:"Unbroken",                                 desc:"Hold the button for 30 seconds. The lights went down.", special:true}
+  {id:"unbroken",     name:"Unbroken",                                 desc:"Hold the button for 30 seconds. The lights went down.", special:true},
+  {id:"decoyed",      name:"Decoyed",                                  desc:"Press the wrong button. There is no right button.", special:true},
+  {id:"doublemill",   name:"Double Millennium",                        desc:"Press 2,000 times. Beyond legend. Beyond help.", need:2000}
 ];
 
 /* ============================================================ STATE */
@@ -1417,7 +2438,7 @@ function syncGlobal(v, passive){
   if(!ms){ if(passive) tickFlash(); return; }
   if(sessionClicks===0 && !passive) return; // silent on first load
   if(first) return; // first sync is calibration, not a witnessed event
-  unlock("milestone");
+  unlock("milestone"); pageQuake();
   if(passive){
     msgBox.innerHTML = `Press #${fmt(ms)} happened while you watched.<br>You did nothing. It has been noted.`;
     log(`milestone ${ms} passed while idle`);
@@ -1518,6 +2539,7 @@ function checkCountAch(n){
   if(n>=500) unlock("veteran");
   if(n>=750) unlock("noreturn");
   if(n>=1000) unlock("millennium");
+  if(n>=2000) unlock("doublemill");
 }
 
 const btnWrap = $("#btnWrap");
@@ -1529,7 +2551,8 @@ const BTN_LABELS = [
   [200,"it hatches"],[225,"come back"],[250,"squish"],[300,"WARP"],[350,"nope"],
   [400,"fading"],[450,"■"],[500,"HALFWAY"],[550,"shiny"],[600,"can't see me"],
   [650,"wobbly"],[700,"bzzzt"],[750,"INVERTED"],[800,"wheee"],[850,"soft"],
-  [900,"dark"],[950,"almost"],[1000,"HATCHED"]
+  [900,"dark"],[950,"almost"],[1000,"HATCHED"],[1100,"again?"],
+  [1500,"LEGEND II"],[2000,"BEYOND"]
 ];
 function btnLabelFor(n){
   let label = "PRESS";
@@ -1603,7 +2626,13 @@ const STUNTS = {
   850:()=>{ tempFx("fx-pill",2200); tempFx("fx-rainbow",2200); stuntMove(60,20); },
   900:()=>{ tempFx("fx-jitter",2200); setBtnColor("c-black"); },
   950:()=>{ setBtnColor(null); stunt("fx-warp",950); stunt("fx-spin-rev",950); },
-  1000:()=>{ tempFx("fx-rainbow",4000); stunt("fx-spin",850); setTimeout(()=>stunt("fx-flash",1100),900); log("it hatched. happy birthday."); }
+  1000:()=>{ tempFx("fx-rainbow",4000); stunt("fx-spin",850); setTimeout(()=>stunt("fx-flash",1100),900); log("it hatched. happy birthday."); },
+  1100:()=>{ tempFx("fx-rainbow",2200); stunt("fx-wobble",750); },
+  1250:()=>{ hideAttempt(1400); },
+  1400:()=>{ stunt("fx-spin",850); stuntMove(-60,20); setBtnColor("c-purple"); },
+  1500:()=>{ setBtnColor("c-gold"); tempFx("fx-rainbow",2600); stunt("fx-spin",850); },
+  1750:()=>{ hideAttempt(1500); stuntMove(70,10); },
+  2000:()=>{ tempFx("fx-rainbow",5000); stunt("fx-spin",850); setTimeout(()=>stunt("fx-spin-rev",950),900); setTimeout(()=>stunt("fx-flash",1100),1800); log("TWO THOUSAND. the button bows. it has no waist."); }
 };
 function ambientStunt(n){
   if(reduceMotion || n<12) return;
@@ -1627,6 +2656,7 @@ function clearModes(){
   btn.classList.remove("fx-colossus","fx-microbe","fx-ghost","fx-whirl","fx-neg");
   document.body.classList.remove("haunted");
   if(fugitiveLeft===0) btnWrap.classList.remove("fugitive");
+  if(teaseLeft===0) btnWrap.classList.remove("tease");
 }
 function fugitiveTeleport(){
   const st = $("#stage");
@@ -1648,7 +2678,9 @@ const PERSIST = {
   240:()=>goMicrobe(), 268:()=>goWhirl(), 314:()=>goFugitive(4), 360:()=>goGhost(),
   430:()=>goMicrobe(), 470:()=>goColossus(), 540:()=>goWhirl(), 590:()=>goFugitive(4),
   640:()=>goGhost(), 690:()=>goMicrobe(), 730:()=>goColossus(), 810:()=>goWhirl(),
-  870:()=>goFugitive(5), 920:()=>goGhost(), 960:()=>goMicrobe(), 990:()=>goColossus()
+  870:()=>goFugitive(5), 920:()=>goGhost(), 960:()=>goMicrobe(), 990:()=>goColossus(),
+  1050:()=>goMicrobe(), 1200:()=>goFugitive(6), 1350:()=>goColossus(), 1600:()=>goGhost(),
+  1750:()=>goWhirl(), 1920:()=>goMicrobe()
 };
 const PERSIST_MSGS = {
   42:"It is large now. Press the large.", 66:"It is small now. Find the small. Press the small.",
@@ -1662,7 +2694,13 @@ const PERSIST_MSGS = {
   640:"The button is elsewhere. Elsewhere is here.", 690:"Smol at scale. Press with precision.",
   730:"It fills the screen. The screen is honored.", 810:"Whirlpool of red. Do not fall in. Fall in. Press.",
   870:"Five presses. It has never run this far. Neither have you.", 920:"Vanished before the legend. Find it. Press it.",
-  960:"Nearly legend, very smol. Press carefully.", 990:"Almost legend. LARGE legend. PRESS."
+  960:"Nearly legend, very smol. Press carefully.", 990:"Almost legend. LARGE legend. PRESS.",
+  1050:"Smol beyond legend. The legend shrinks. Press the legend.",
+  1200:"It flees for six presses. Olympian. Press.",
+  1350:"COLOSSUS II. Bigger. Redder. Humbled. Press.",
+  1600:"Gone past legend. The elsewhere is elsewhere.",
+  1750:"Spin beyond spinning. The whirl whirls you.",
+  1920:"Eighty from forever. Smol with anticipation."
 };
 function randomPersist(){
   const opts=[goGhost,goMicrobe,goWhirl,()=>goFugitive(2)];
@@ -1675,7 +2713,7 @@ function randomPersist(){
    It looks left. It looks right. It looks at YOU. Then it zips back in.
    Pressing mid-peek = poking it. It will remember that. */
 const maw = $("#maw"), critter = $("#critter"), sidekick = $("#sidekick"), signText = $("#signText");
-const CREATURE_AT = [150, 333, 555, 777];
+const CREATURE_AT = [150, 333, 555, 777, 1111, 1444, 1777];
 const POKE_LINE = "You poked it.<br>It will remember that.";
 let peekActive = false, peekTimers = [];
 function later(fn, ms){ peekTimers.push(setTimeout(fn, ms)); }
@@ -1773,6 +2811,75 @@ function pokeCritter(){
   setTimeout(()=>{ endPeek("it zipped itself back in, offended."); }, 650);
 }
 
+/* ============================================================ TEASE + DECOY + QUAKE
+   TEASE: for a few presses the button glides away from your cursor,
+   keeping its distance. DECOY: a smaller, wronger button appears.
+   Clicking it counts for nothing and earns everything. QUAKE: the page
+   shudders whenever a global thousand rolls over. */
+const decoy = $("#decoy");
+let teaseLeft = 0, decoyTimer = null;
+function clearTease(){
+  teaseLeft = 0;
+  btnWrap.classList.remove("tease");
+}
+function goTease(k){
+  teaseLeft = k;
+  btnWrap.classList.add("tease");
+  setBtnLabel("not yet");
+  log(`it keeps its distance for ${k} presses. respect that. chase it.`);
+}
+function teaseGlide(e){
+  if(teaseLeft <= 0 || reduceMotion) return;
+  const st = $("#stage").getBoundingClientRect();
+  const cx = st.left + st.width / 2, cy = st.top + st.height / 2;
+  let dx = cx - e.clientX, dy = cy - e.clientY;
+  const d = Math.hypot(dx, dy) || 1;
+  const push = Math.min(160, 14000 / d); // closer cursor = stronger shove
+  const x = Math.max(-(st.width/2-70), Math.min(st.width/2-70, (dx/d)*push + (btnWrap._tx||0)*0.4));
+  const y = Math.max(-90, Math.min(90, (dy/d)*push));
+  btnWrap._tx = x;
+  btnWrap.style.transform = `translate(${Math.round(x)}px,${Math.round(y)}px)`;
+}
+$("#stage").addEventListener("mousemove", teaseGlide);
+const TEASE_AT = {
+  388: "It keeps its distance. Respect that. Chase it.",
+  505: "Not yet. Nearly. Not yet.",
+  720: "The button is shy at this altitude. Coax it.",
+  940: "So close to legend. It can smell your finger. It steps back."
+};
+function showDecoy(){
+  if(!decoy.hidden) return;
+  const st = $("#stage");
+  const w = st.clientWidth;
+  decoy.style.left = Math.round(Math.random()*(w-130)+10) + "px";
+  decoy.style.top = Math.round(Math.random()*180+40) + "px";
+  decoy.hidden = false;
+  log("a decoy appears. it does nothing. differently.");
+  clearTimeout(decoyTimer);
+  decoyTimer = setTimeout(hideDecoy, 12000);
+}
+function hideDecoy(silent){
+  if(decoy.hidden) return;
+  decoy.hidden = true;
+  clearTimeout(decoyTimer);
+  if(!silent) log("the decoy lost interest.");
+}
+decoy.addEventListener("click", (e)=>{
+  e.stopPropagation();
+  hideDecoy(true);
+  unlock("decoyed");
+  msgBox.innerHTML = "Wrong button.<br>That one does nothing. This one does nothing differently.";
+  log("decoy pressed. the real button is furious. the decoy is smug.");
+});
+const DECOY_AT = [222, 404, 616, 848];
+function pageQuake(){
+  if(reduceMotion || !document.body) return;
+  document.body.classList.remove("quake");
+  void document.body.offsetWidth;
+  document.body.classList.add("quake");
+  setTimeout(()=>document.body.classList.remove("quake"), 600);
+}
+
 /* ============================================================ ESCALATION */
 function log(line){
   if(sessionClicks < 75 && !logBox.classList.contains("show")) return; // hidden until late game
@@ -1801,7 +2908,10 @@ function applyEscalation(n){
   setBtnLabel(btnLabelFor(n));
   // persistent nightmare modes (override label inside their trigger fns)
   if(PERSIST[n]) PERSIST[n]();
+  if(TEASE_AT[n]){ goTease(3); }
+  if(DECOY_AT.includes(n)) showDecoy();
   if(n>=60 && Math.random()<0.06) randomPersist();
+  if(n>=150 && decoy.hidden && Math.random()<0.02) showDecoy();
   if(CREATURE_AT.includes(n)) creatureEvent();
   if(n>=120 && !peekActive && Math.random()<0.03) creatureEvent();
   if(n===100){ document.title = "we can see the tab"; }
@@ -1906,6 +3016,7 @@ document.addEventListener("keydown", e=>{
 function directorOverride(n, prevGlobal, nextGlobal){
   const ms = crossedMilestone(prevGlobal, nextGlobal);
   if(ms){ unlock("milestone"); return `You were press #${fmt(ms)}.<br>This may become relevant later.`; }
+  if(TEASE_AT[n]) return TEASE_AT[n];
   if(PERSIST_MSGS[n]) return PERSIST_MSGS[n];
   if(n===25){
     displayOffset -= 1; unlock("expunged");
@@ -1917,6 +3028,8 @@ function directorOverride(n, prevGlobal, nextGlobal){
   if(n===200) return "You have seen everything. It changes nothing. Press again. See.";
   if(n===500) return "Five hundred. The prophecy is half-fulfilled. The basement holds its breath.";
   if(n===1000) return "ONE THOUSAND. It hatched. You did this. There is no going back. There never was.";
+  if(n===1500) return "Fifteen hundred. The hatchling calls you parent. The basement calls you legend.";
+  if(n===2000) return "TWO THOUSAND. Beyond legend. Beyond help. Beyond button. Press anyway.";
   return null;
 }
 
@@ -1935,9 +3048,11 @@ btn.addEventListener("click", ()=>{
   // supervisor evasion
   if(supervisorPhase===1) unlock("supervisor");
 
-  // fugitive escape check BEFORE clearing: it leaps away from this very press
+  // fugitive + tease countdowns BEFORE clearing: they slip away from this very press
   const escaped = fugitiveLeft>0;
   if(escaped) fugitiveLeft--;
+  const teased = teaseLeft>0;
+  if(teased) teaseLeft--;
   clearModes();
 
   // poking the resident takes priority over everything else
@@ -1968,6 +3083,11 @@ btn.addEventListener("click", ()=>{
     else log("it escaped. again.");
     setTimeout(fugitiveTeleport, 200);
   }
+  // tease keeps its distance; label holds until the spell breaks
+  if(teased){
+    if(teaseLeft===0){ btnWrap.style.transform=`translateX(${buttonNudge||0}px)`; btnWrap._tx=0; log("it trusts you again. (it does not.)"); }
+    else { setBtnLabel("not yet"); log("still not yet."); }
+  }
 });
 
 // milestone re-check on async api bounce lives in setGlobal() —
@@ -1982,6 +3102,7 @@ $("#reset").addEventListener("click", ()=>{
   bag = []; supervisorPhase = 0; buttonNudge = 0;
   rapidStreak = 0; idleStart = Date.now();
   clearModes();
+  clearTease(); hideDecoy(true);
   holdCancel(true);
   clearPeekTimers();
   maw.classList.remove("open");
